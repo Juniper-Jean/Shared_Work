@@ -1,0 +1,9 @@
+Binary_Classifier/Data/
+# Ignore Binary_Classifier/Data/ directory.
+# Don't want to push big data files to GitHub- can bloat repo's size & make it slow to clone & work with.
+# Best to store big data files elsewhere & not include in version control.
+# (Specify 'Binary_Classifier/Data/' with a trailing slash- want to ignore dir & its contents. If omit trailing slash 'Binary_Classifier/Data', would ignore files with name 'Data'.)
+
+.DS_Store
+# Ignore .DS_Store files.
+# These are made by macOS Finder & store metadata about the directory. They're not useful in version-controlled repos.
