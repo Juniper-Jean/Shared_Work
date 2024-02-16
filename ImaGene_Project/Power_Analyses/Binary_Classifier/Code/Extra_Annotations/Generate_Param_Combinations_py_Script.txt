@@ -1,0 +1,293 @@
+# Extra Annotations for Generate_Param_Combinations.py Script
+2024 Feb 4
+
+#
+cd Documents/PhD_Imperial_2023-27/ImaGene_Project/Power_Analyses/Binary_Classifier/Code 
+conda activate ImaGene
+
+
+# Shebang Line
+#!/Users/cpenning/anaconda3/bin/python
+Shebang line specifies which interpreter to use when script executed.
+`#!`- the actual shebang/hashbang- special character sequence telling OS that what follows is path to interpreter. Only relevant on Unix-like OSs (Linux, macOS).
+Followed by full path to Python interpreter you want to use- points to Python executable installed on your system, in my case by Anaconda.
+
+If you make script executable (using `chmod +x your_script.py`) & run it (eg `./your_script.py`), system reads shebang- ensures script runs w/ intended version of interpreter- important if multiple versions installed.
+W/o shebang, you can't directly execute script using `./your_script.py` unless system has default way to interpret such files.
+Instead, you must explicitly call interpreter followed by script name (eg `python your_script.py`)- will run script using whatever version of Python is set as default in current env.
+
+If you write script for multiple users, users may have different envs- path to interpreter may not be same on all systems.
+Common approach is to use generic shebang that relies on env's `PATH` to find interpreter, eg `#!/usr/bin/env python` will use 1st Python interpreter in user's `PATH`- may be more flexible across different systems.
+
+[
+In professional software engineering, when designing software for use across various envs, there are several practices to ensure broad compatibility, eg:
+containerisation like Docker (containers package application w/ all dependencies, ensuring it runs same regardless of env)
+cross-platform testing
+user feedback
+write env-agnostic scripts (includes avoiding hard-coded paths, instead using relative paths or env variables).
+]
+
+Originally, script used specific shebang line (`#!/Users/cpenning/anaconda3/bin/python`) pointing directly to Anaconda Python interpreter on my local machine.
+But, to accommodate execution on HPC cluster, where path to Python interpreter may differ, I changed shebang to more environment-agnostic form: `#!/usr/bin/env python3`.
+
+
+# `generate_parameter_combinations` Fn
+##
+parameters.values()
+param_values = [values for values in parameters.values()]
+param_values
+Extract vals for ea param in `parameters` dict.
+Make list of lists, where ea inner list contains vals for 1 param.
+
+`parameters.values()` returns vals from `parameters` dict.
+Since ea val in dict is list, `parameters.values()` returns iterable of lists.
+
+list comprehension- concise way (shorter syntax) to make list based on vals in existing iterable
+Consists of brackets containing an expression followed by `for` clause, then 0+ `for`/`if` clauses.
+
+Expression `values for values in parameters.values()` iterates over ea list in `parameters.values()` & list comprehension collects lists into new list.
+`param_values` will be list of lists, where ea inner list contains vals for 1 param.
+
+
+##
+print(*param_values)
+itertools.product(*param_values)
+list(itertools.product(*param_values))
+
+combinations = list(itertools.product(*param_values))
+combinations
+Compute Cartesian product (all possible combinations) of param vals.
+Result is list of tuples- ea tuple is a unique combination of param vals.
+
+`*`- unpacking operator- feature of Python lists & other iterables (not specific to itertools).
+When used w/ fn call, unpacks iterable, passing its elements as separate args to fn.
+
+`itertools.product()` fn takes multiple iterables as input (here, list of lists- param vals) & computes Cartesian product.
+Cartesian product- mathematical concept- all possible combinations of items from multiple sets.
+Input is multiple iterables, ea a separate arg. This is why must unpack list of lists.
+Calling `itertools.product(param_values)` is incorrect as it passes 1 arg (a list of lists- must pass separate lists).
+Output is custom iterator that yields tuples.
+'yields tuples' means ea element produced by iterator when loop over it is tuple.
+Memory-efficient approach as combinations not all stored in memory at once; generated 1 by 1 as we iterate.
+
+Apply `list()` to iterator to convert it into list of tuples for easier access. (Iterator from `itertools.product()` designed to be compatible w/ `list()` & other fns.)
+Eg, w/o converting to list, we wouldn't be able to use indexing or get length.
+
+Tuple- collection that's ordered & immutable (can't change contents once created). Tuples written w/ round brackets.
+List- also an ordered collection, but mutable (can change, add, remove items after list made). Written w/ square brackets. More flexible than tuples, but consume more memory & may be slower.
+
+
+# `write_combinations_to_csv` Fn
+##
+with open(csv_file_path, 'w', newline='') as file:
+Open CSV file in write mode ('w'). If file exists, it'll be overwritten; if it doesn't, it'll be made.
+`with` statement automatically handles closing file once code block is exited, even if exceptions (errors) occur.
+This simplifies code & makes it more robust by eliminating need for explicit `file.close()` calls, reducing risk of leaving files open & causing resource leaks.
+
+`with` statement automatically handles closing file once code block is exited, even if exceptions (errors) occur.
+This simplifies code & makes it more robust by eliminating need for explicit `file.close()` calls, reducing risk of leaving files open & causing resource leaks.
+
+Resource leaks occur when computer resources like file handles, memory allocations, or network connections aren't released after use, risking system instability/failure (it's about failure to release or inefficient use of system resources).
+
+`open(file_path, mode='r')` fn opens file & returns file obj- it's built-in Python fn used for file handling.
+`mode` param- mode in which file is opened, eg 'r' for reading, 'w' for writing
+When opening file in write ('w') mode, if file doesn't exist, fn creates it; if it already exists, fn erases all its contents before writing new data.
+
+`as file`:
+`as` keyword is used to assign file obj returned by `open()` to a var.
+This var is used to reference open file throughout `with` block.
+
+`newline=''` arg:
+When writing to CSV files, newline chars are typically written.
+Different operating systems use different chars to represent end of line in text file (Unix & Mac use '\n', Windows uses '\r\n').
+`csv.writer` class specifically uses '\r\n', adhering to CSV standard.
+`newline=''` tells Python to keep newline chars as they are & not automatically convert them into platform-specific line endings.
+W/o `newline=''`, Python's default behavior may alter format `csv` module implementing (may add extra line breaks).
+Using `newline=''` is good practice & crucial detail- ensures:
+- integrity of data.
+- `csv.writer` handles line endings consistently & correctly, making CSV files more universally readable & compliant w/ CSV standard.
+- script behaves consistently across different operating systems, enhancing its portability & reliability.
+
+
+##
+writer = csv.writer(file)
+Make instance of `csv.writer` class (instantiate/make `csv.writer` obj) to handle CSV operations on an opened file.
+
+`csv.writer` is class in `csv` module.
+Python class defines type of obj, specifying obj's attributes & methods.
+`csv.writer(file)` fn call is class constructor- makes obj of `csv.writer` class.
+`writer` obj is designed to interact w/ file obj- `csv.writer` class defines custom obj equipped w/ methods for CSV file operations.
+We pass file obj we just opened as arg to constructor.
+1 method is `writerow()`- writes data to file in correct CSV format.
+
+
+##
+headers = ['ID', 'sel_coeff_ID'] + list(parameters.keys())
+Define list to hold col headers (header row) for CSV.
+Result is 1 list starting w/ 'ID' & 'sel_coeff_ID', followed by param names.
+
+`['ID']` makes list containing 1 str.
+`parameters.keys()` gets keys from `parameters` dict- param names.
+`list(parameters.keys())` converts keys into list.
+`+` operator concatenates 2 lists.
+
+
+##
+for count, combination in enumerate(combinations, start=1):
+Use `enumerate()` to loop over `combinations` w/ a counter starting at 1.
+`combinations` is list of tuples, where ea tuple is set of param vals.
+
+`enumerate(iterable, start=0)` fn adds counter (here, `count`) to iterable (here, `combinations`).
+Params: `start` (optional)- start index from which enumeration begins- 0 if not specified.
+
+
+##
+sel_coeff_values = combination[list(parameters.keys()).index('SELRANGE')]
+Extract selection coefficient (SELRANGE) vals from current param combination.
+
+`parameters.keys()` returns a view obj that displays list of all keys in dict. When you call `.keys()` method on dict, it returns a view, not list, obj.
+`list(parameters.keys()` converts dict's keys (view obj returned by `parameters.keys()`) into list, allowing for index-based operations on keys.
+`.index()` is method of list class. It returns index (position) of 1st occurrence of a specified val within list.
+Call `.index('SELRANGE')` on list to find position of str 'SELRANGE' ('SELRANGE' key) within list of dict's keys.
+`combination` is tuple containing all param vals for current combination.
+By using index of 'SELRANGE', we select the corresponding values from the `combination` tuple.
+
+
+# View Objs
+Special kind of obj unique to dicts (defined in dictionary class in Python's standard library)
+Created when call `.keys()`, `.values()`, or `.items()` methods on dict.
+Allow you to see (provide view of) dict's keys, vals, or key-val pairs (respectively) in dynamic, real-time, memory-efficient way. This means if dict changes after creation of view obj, contents of the view will reflect these changes.
+Don't copy keys, vals, or items; they merely provide a window to see them as they are in dict at any moment. This allows for more efficient memory use & performance, esp when work w big dicts
+
+
+##
+sel_coeff_ID = sel_coeff_values.replace(' ', '_')
+Val of `sel_coeff_values` is str like '0 300 300'.
+Replace all spaces in str `sel_coeff_values` w/ underscore, producing format '0_300_300'.
+
+`string.replace(old, new)`- built-in str method used to replace specified phrase w/ another specified phrase within str.
+Params:
+`string`- original str where replacement is to be performed
+`old`- substring to be searched for & replaced
+`new`- substring that will replace ea occurrence of `old`.
+
+`sel_coeff_values.replace(' ', '_')` calls `.replace()` method on str contained in `sel_coeff_values`.
+Looks for all spaces (' ') in str `sel_coeff_values` & replaces ea w/ underscore ('_').
+
+
+## Old Version
+sel_coeff_id = '_'.join(map(str, sel_coeff_values))
+Make unique identifier for selection coefficient vals used in param set / experimental run.
+
+Later in workflow, we use ANOVA as part of power analysis to assess impact of sim params (used to generate synthetic training data) on model performance.
+Our examination focused on how variations in training datasets (representing different evolutionary scenarios) affect predictive accuracy.
+
+In context of this workflow, 'one experimental run' (observation) refers to executing a set of sims using 1 set of param vals & training 1 model.
+Sel coeff is target var for NNs (var we train NNs to predict).
+So, this param inherently comprises multiple vals within single experimental run, unlike other sim params.
+This poses challenge in context of ANOVA.
+
+For ANOVA, we treat sel coeff as single factor.
+This is to streamline investigation of its & other params' influence on NN's predictive accuracy.
+The approach accomodates, for ea observation, only 1 val per factor.
+So, for stat analysis, we condense & encode sel coeff classes into distinct, non-overlapping categories (a single categorical unit).
+In this encoding scheme, ea unique identifier, like '0_400' or '200_400', represents combination of sel coeff classes (in bin classification) or min & max limits of a val range (regr model).
+
+We make col in CSV file for these identifiers.
+
+*See 'Challenge_Selection_Coefficient_ANOVA_2024Feb4.txt'
+
+
+`str(object='')` built-in fn converts given obj to its string representation. (If no obj is provided, returns empty string.)
+Params: `object` (optional): obj to convert to str. Can convert any Python obj to str representation.
+
+`map(function, iterable, ...)` fn applies specified fn to every item of an iterable (eg, list, tuple).
+Fn can take as many iterables as there are params to the fn.
+Params:
+`function`: fn to execute for ea item in the iterable. Fn must take as many args as there are iterables passed to `map`.
+`iterable`: an iterable obj whose items are to be processed by fn. You can pass multiple iterables if fn takes multiple args.
+Returns an iterator that yields the results after applying fn to ea item of the iterable(s).
+
+`map(str, sel_coeff_values)` uses `map` fn to apply `str` fn to ea item in `sel_coeff_values` tuple. This converts ea item into its string representation.
+
+`.join()` string method:
+General format: `delimiter.join(iterable)`
+Joins elements of an iterable into 1 string, w/ ea element separated by specified delimiter.
+`delimiter`: str on which `.join()` is called & it specifies str used to separate ea element in resulting str.
+Params: `iterable`: iterable obj whose elements are strings.
+
+`'_'.join(...)` concatenates str representations of selection coefficient values, using underscore as separator.
+Result is str that uniquely represents the combination of selection coefficient classes (in binary classification) or min & max of the range of values (for regression model).
+
+
+##
+row = [count, sel_coeff_id] + list(combination)
+writer.writerow(row)
+Write row to CSV- row contains nr (current counter val, `count`) & 1 set of param values.
+Counter val serves as sequential identifier for ea set of param vals (row in CSV). This helps keep track of ea param set & make data organised.
+
+`writer.writerow()` method accepts 1 iterable (like list or tuple) as arg.
+This iterable represents 1 row in CSV file & ea element in iterable 1 cell in row.
+So, must join 2 parts into 1 iterable.
+`combination` is tuple, but to concatenate it w/ `count` (which is 1 val, not an iterable), more convenient to 1st convert tuple to list. This is because can easily concatenate lists using `+` operator.
+Result is 1 list starting w/ current counter val, followed by 1 set of param vals.
+
+
+# `main` Fn
+"""
+Orchestrates execution of the script's primary task.
+
+The main function serves a dual purpose. It acts as the entry point for the script when executed as a standalone program. In this mode, it can define arguments or behaviours specific to standalone execution.
+
+Additionally, the main function can be invoked as a callable function when the script is imported into other scripts or as part of a larger workflow. This capability allows the function to be called with specific arguments, providing flexibility for using it in different contexts. It thus functions as a reuseable, adaptable component with larger, modular systems.
+
+Parameters:
+- parameters (dict): dictionary where each key is a parameter name & the value is a list of values for the parameter.
+- analysis_version (str): version number of the analysis
+"""
+
+##
+os.makedirs(analysis_version, exist_ok=True)
+Make dir if it doesn't exist.
+`os.makedirs` fn in `os` module recursively creates a dir & any missing intermediate dirs in specified path.
+`exist_ok=True` keyword arg tells `os.makedirs()` to do nothing if dir already exists, preventing any deletion/modification of existing data.
+
+`os.makedirs` fn in `os` module recursively creates a dir & any missing intermediate dirs in specified path.
+General format: `os.makedirs(name, mode=0o777, exist_ok=False)`
+Params:
+`name` (str): path to dir to create. If intermediate dirs in path don't exist, they will be made as well.
+`exist_ok` (bool, optional): If `False` (default), `FileExistsError` is raised if dir already exists.
+If `True`, fn does nothing if dir already exists, preventing the error & making the operation idempotent.
+
+`exist_ok=True` keyword arg tells `os.makedirs()` to do nothing if dir already exists, preventing any deletion/modification of existing data.
+
+Method is safe & idempotent, meaning it can be run multiple times w/o causing errors or unintended side effects.
+It safely makes dirs w/o affecting existing dirs/files.
+Idempotency: Running script multiple times won't cause errors or unintended side effects if the dirs already exist, making script's dir creation steps idempotent.
+
+(Setting `exist_ok=True` is useful when run script multiple times- where multiple instances may attempt to make the dir.)
+
+
+## Old Version
+if not os.path.exists(analysis_version):
+    os.makedirs(analysis_version)
+Check if dir exists; make it if it doesn't (if `os.path.exists(path)` returns `False`).
+
+`os.path.exists(path)` fn:
+`path` param- str representing file path
+Returns `True` if path exists & `False` otherwise.
+
+
+##
+csv_file_path = os.path.join(analysis_version, 'Parameter_Combinations.csv')
+Construct full path to CSV file by concatenating analysis version dir name w/ CSV file name.
+
+`os.path.join(path1, path2, ..., pathN)` fn concatenates path components into 1 path str. It automatically inserts correct path separator ('/') depending on OS.
+`path1, path2, ..., pathN` params- strings representing path components to be joined together.
+Returns single string representing combined file path, w/ appropriate separators inserted bw ea component.
+
+`os.path.join()` automatically uses correct path separator for OS on which script is run ('/' on Unix, '\' on Windows).
+This makes code more portable across different OSs w/o modification (provides reliable, system-agnostic method to handle file paths- cross-platform compatibility).
+Hardcoding path separators can reduce portability b/w OSs.
+
+`os.path.join()` easily handles both variables & literals, making it adaptable for constructing dynamically-generated paths.

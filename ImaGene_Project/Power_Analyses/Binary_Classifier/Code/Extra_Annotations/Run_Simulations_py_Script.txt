@@ -1,0 +1,18 @@
+# Extra Annotations for Run_Simulations.py Script
+2024 Feb 6
+
+# `run_simulations` Fn
+cmd = ['bash', 'generate_dataset.sh', param_file_path, output_dir]
+subprocess.call(cmd)
+Execute shell cmd from within Python- run 'generate_dataset.sh' shell script.
+When you use `subprocess.call()`, you must pass cmd & args as list- ea item in list is 1 part of cmd.
+
+'Generate_Dataset.sh' generates (synthetic) data - it runs a set of many simulations using MSMS (a simulator, https://www.mabs.at/publications/software-msms/)
+The script takes two arguments: an input .txt file specifying the simulations' parameters, & a directory path in which to save simulation outputs.
+It splits simulations into batches, so, later, we can train a neural network with a 'simulation-on-the-fly' approach.
+
+`subprocess.call(args)` fn executes cmd described by `args`, waits for it to complete, then returns `returncode` attribute.
+`args`- cmd to execute provided as list. 1st list element is cmd itself & subsequent elements are args passed to cmd. Eg, `['ls', '-l']` would execute `ls` cmd w/ `-l` arg.
+`returncode` attribute- exit status of executed cmd, integer val returned upon its completion:
+`returncode` of `0` means cmd was executed successfully w/o errors.
+Non-zero `returncode` means error occurred.

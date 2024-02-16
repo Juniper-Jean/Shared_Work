@@ -1,0 +1,193 @@
+# Extra Annotations for Train_Model.py Script
+2024 Feb 13
+
+also see 'Train_Model_py_Script.txt'
+
+##
+binary classifier
+
+#----
+# Build & compile Keras Sequential model.
+#----
+model = models.Sequential([
+# Make obj (instance) of Keras Sequential model class (linear stack of layers).
+
+    layers.Conv2D(filters=32, kernel_size=(3,3), strides=(1,1), activation='relu', kernel_regularizer=regularizers.l1_l2(l1=0.005, l2=0.005), padding='valid', input_shape=gene_sim.data.shape[1:]),
+# Add 2D convolutional layer, configured w/ 32 filters, 3x3 kernel size, stride of 1, ReLU activation fn, Elastic Net regularisation, 'valid' padding.
+# Input shape dynamically matches dims of training data.
+# 'valid' padding means no padding- convolution operation is only applied to regions where filter fully fits inside input volume.
+# Dims of output volume may reduce.
+
+    layers.MaxPooling2D(pool_size=(2,2)),
+# Add max pooling layer (instantiate obj of `MaxPooling2D` class from Keras API), which reduces spatial dims (width & height) of input volume.
+# `pool_size` param specifies size of pooling window (here, 2x2).
+
+    layers.Conv2D(filters=32, kernel_size=(3,3), strides=(1,1), activation='relu', kernel_regularizer=regularizers.l1_l2(l1=0.005, l2=0.005), padding='valid'),
+
+    layers.MaxPooling2D(pool_size=(2,2)),
+
+    layers.Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), activation='relu', kernel_regularizer=regularizers.l1_l2(l1=0.005, l2=0.005), padding='valid'),
+# Add another convolutional layer w/ 64 filters.
+
+    layers.MaxPooling2D(pool_size=(2,2)),
+
+    layers.Flatten(),
+# `layers.Flatten()` layer flattens input. It transforms multidimensional output of preceding layers into a one-dimensional array (converts 2D arrays into a 1D array, reshapes input data into a flat vector).
+# It doesn't have params.
+# It's necessary because following dense layers expect vector input- prepares convolutionally processed data for fully connected (Dense) layers that follow.
+
+    layers.Dense(units=128, activation='relu'),
+# Add dense (fully connected) layer to network.
+# Use 128 units w/ ReLU activation fn.
+
+    layers.Dense(units=1, activation='sigmoid')])
+# Another dense layer, but w/ single unit & sigmoid activation fn.
+# This is typical configuration for binary classification, where output is probability of input belonging to 1 of 2 classes.
+# Sigmoid fn outputs val b/w 0 & 1.
+
+
+`keras.layers` is module (in Keras API) that contains various NN layer classes.
+Components (convolutional, pooling, dense layers) are objects from `keras.layers` module.
+
+
+# Convolutional Layer
+`layers.Conv2D(filters=32, kernel_size=(3,3), strides=(1,1), activation='relu', kernel_regularizer=regularizers.l1_l2(l1=0.005, l2=0.005), padding='valid', input_shape=gene_sim.data.shape[1:])`
+Instantiate obj (call constructor) of `Conv2D` class.
+
+`kernel_size=(3, 3)`- dimensions of kernel (convolution) window- size of filter matrix
+Kernel size of (3, 3) means we use 3x3 matrix to perform convolution operation.
+
+`strides=(1, 1)`- stride of convolution along height & width
+Stride of (1, 1) means filter moves 1 pixel at a time when processing input image.
+
+`activation='relu'`- activation fn to use
+here, rectified linear unit / ReLU, common activation fn that introduces non-linearity to model
+
+
+## `filters=32` keyword arg sets/specifies nr of output filters (neurons, learnable parameters, feature detectors) in convolutional layer.
+
+Filters in convolutional layer are kernels that perform convolution operations on input data.
+Ea filter detects specific features from input, eg edges, textures, or more complex patterns in deeper layers.
+During training, layer adjusts weights of filters to learn features from input data.
+Ea filter has its own set of weights.
+(
+'Output' filters refers to nr of feature maps produced by convolutional layer. Ea filter produces 1 feature map, so w/ 32 filters, you get 32 feature maps as output of this layer. Ea feature map represents response of input data to 1 filter.
+)
+
+Choice of 32 or 64 filters means the layer learns to detect 32 or 64 distinct features from its input.
+1st convolutional layer w/ 32 filters (relatively small nr of filters) is designed to detect basic features in input images.
+A smaller nr of filters at this stage helps model to pick up basic patterns w/o overcomplicating learning process.
+Subsequent layers w/ more filters, eg 64, detect more complex, abstract features.
+These layers build upon simpler features detected by initial layers to create hierarchy of feature detection.
+Increasing nr of filters potentially allows network to capture broader, more complex range of features.
+But, it also increases computational complexity, which could lead to overfitting if not managed properly w/ regularisation, sufficient data, & appropriate model complexity.
+
+
+## `kernel_regularizer=regularizers.l1_l2(l1=0.005, l2=0.005)`
+Regularisation fns apply penalties on layer params or layer activity during optimisation.
+Penalties are summed into loss fn that network optimises.
+Regularisation helps prevent overfitting by discouraging overly complex models.
+
+L1 regularisation (Lasso) adds penalty equal to absolute vals of coefficients.
+Ea coeff's absolute val contributes to penalty, encouraging sparsity in model params.
+Penalising size of model coeffs encourages sparsity because it makes cost of including any given feature in model proportional to absolute val of its coeff.
+If feature's coeff is small (close to zero), it contributes v little to model but still incurs penalty.
+As a result, optimisation process finds it beneficial to set such coeffs to exactly zero, removing those features from model.
+This leads to sparser model, where only features w/ significant coeffs are retained, simplifying model & potentially improving generalisation.
+This is useful for feature selection or when you suspect some features are irrelevant.
+
+L2 regularisation (Ridge) penalises square of coeffs, encouraging them to be small but not necessarily 0.
+It helps prevent overfitting by discouraging overly complex models that fit training data too closely. 
+
+Using both L1 & L2 regularisation together combines benefits of both techniques.
+This is known as Elastic Net regularisation.
+It can achieve balance where model is encouraged to be both sparse (thanks to L1) & have small coefficients overall (thanks to L2), which can lead to model that generalises better on unseen data.
+`l1=0.005` & `l2=0.005` params control strength of L1 & L2 penalties, respectively.
+
+
+## `padding='valid'` param in convolutional layer configuration specifies how layer handles borders of input volume.
+'valid' padding means no padding- convolution operation is only applied to regions where filter fully fits inside input volume.
+Dims of output volume may reduce.
+
+In CNNs, applying convolution operation w/ 'valid' padding reduces output's dims.
+'valid' padding doesn't add extra border pixels to input image.
+Exact reduction in size depends on filter size & stride.
+
+W/ stride of 1, 3x3 filter moves 1 pixel at a time across input.
+As it approaches edge, there isn't enough space for filter to fully apply to input w/o extending beyond its bounds.
+W/ 'valid' padding, convolutional filter stops moving when any part of filter would go beyond edge of input image.
+This reduces output size because edge cases where filter would partially extend beyond input aren't included.
+This occurs for every convolutional layer that uses 'valid' padding (discarding edges not fully covered by filter, leading to reduction in size).
+
+For 3x3 filter w/ stride of 1, output is smaller than input dims by 2 pixels in both height & width.
+W/ input image size of (198, 192), applying 3x3 filter w/ 'valid' padding results in output size of (196, 190).
+
+
+## `input_shape` param is specific to 1st layer.
+It sets shape of input data network expects. 
+1st 2 nrs are height & width of input images, & 3rd nr is nr of colour channels (1 for grayscale images).
+
+`input_shape=gene_sim.data.shape[1:]`:
+`array.shape` is numpy array attribute, not fn or method, so it doesn't involve parentheses when called.
+Returns tuple representing array's dims.
+`[1:]`- index slicing- access elements starting from 1st index through to end, excluding zeroth index
+`gene_sim.data.shape[1:]` uses index slicing to get dims of data stored in `gene_sim.data`.
+
+[
+Image dims are (198, 192).
+Assuming `gene_sim.data` contains collection of images w/ last dimension for nr of colour channels (1 for grayscale), 
+`gene_sim.data.shape[1:]` would return tuple (198, 192, 1) (height, width, & nr of colour channels of input images respectively).
+
+Eg, if `gene_sim.data` is numpy array w/ shape (200, 198, 192, 1)
+there are 200 images, ea of size 198x192 pixels w/ 1 colour channel.
+]
+
+This dynamic way of setting `input_shape` ensures model adapts to shape of input data (`gene_sim.data`) w/o hardcoding dims.
+Enhances code's flexibility to handle different image sizes.
+
+`ImaGene` tut, '01_binary.ipynb', resized all images to have shape (198, 192) (198 rows, 192 cols; `gene_sim.resize((198, 192))`) to match dims of real data used in analysis.
+synthetic genomic data generated by the MSMS simulator
+nr of rows is sample size- nr of haplotypes (haploid genomes, gene copies) simulated
+nr of cols is nr of polymorphic sites
+
+
+# Max Pooling Layer
+Add max pooling layer (instantiate obj of `MaxPooling2D` class from Keras API), which reduces spatial dims (width & height) of input volume.
+`pool_size` param specifies size of pooling window (here, 2x2).
+
+In max pooling, window moves over input data & selects max val within ea window, downsampling input.
+W/ 2x2 window it selects max val for ea 2x2 area.
+downsampling- reducing resolution of input data by summarising or aggregating info in smaller sections (which, in case of max pooling, is achieved by taking max val within ea pooling window)
+This reduces spatial dims of input (ie, downsampling), making representation smaller & more manageable, while preserving most significant features detected by convolutional layers.
+This helps to reduce computation & mitigate overfitting by providing abstracted form of input.
+
+Max pooling layers don't perform convolutions & don't have filters w/ weights.
+They simply apply max pooling operation to reduce spatial size of input data.
+
+
+# Dense (Fully Connected) Layer
+`layers.Dense(units=128, activation='relu')`: Add dense (fully connected) layer to network.
+Params:
+`units`- nr of neurons in layer
+`activation`- activation fn.
+Here, use 128 units w/ ReLU activation fn (contributing to network's ability to learn non-linear relationships).
+
+`layers.Dense(units=1, activation='sigmoid')`: Another dense layer, but w/ single unit & sigmoid activation fn.
+This is typical configuration for binary classification, where output is probability of input belonging to 1 of 2 classes.
+Sigmoid fn outputs val b/w 0 & 1 (representing this probability- probability indicating class membership).
+
+Dense (fully connected) layer is type of NN layer where ea neuron receives input from all neurons in previous layer, fully connecting the layers.
+Premise is to interpret features extracted by previous layers (convolutional & max pooling) & make decisions based on them, eg classifying input data into categories.
+Dense layers aggregate these features into form that's useful for making final prediction, mapping extracted features to output space.
+
+Convolutional layers are adept at detecting local patterns in spatial data (like images) & max pooling layers help reduce spatial dims of these patterns, making them more abstract.
+Dense layers take these abstracted features & learn to map them to desired output, like identifying classes.
+(After convolutional & max pooling layers have extracted & condensed relevant features from input data, )dense layers act as decision-making component of network.
+They perform high-level reasoning needed to make predictions.
+Dense layers are essential for interpreting hierarchical features extracted by convolutional & max pooling layers, & making predictions based on these features.
+They bridge gap b/w feature extraction & prediction (play crucial role in latter part of CNN architecture).
+
+Dense layers aggregate these features into form that's useful for making final prediction, mapping extracted features to output space.
+
+Dense layers come after flatten layers because they require a flat vector of features as input, rather than multi-dimensional arrays produced by convolutional & max pooling layers.
+Flatten layer converts these multi-dimensional arrays into a flat vector.

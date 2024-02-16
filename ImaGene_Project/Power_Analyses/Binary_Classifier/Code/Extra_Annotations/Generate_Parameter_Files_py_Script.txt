@@ -1,0 +1,112 @@
+# Extra Annotations for Generate_Parameter_Files.py Script
+2024 Feb 4
+
+# `generate_parameter_files` Fn
+##
+os.makedirs(output_dir, exist_ok=True)
+# Make dir if it doesn't exist.
+# `os.makedirs` fn in `os` module recursively creates a dir & any missing intermediate dirs in specified path.
+# `exist_ok=True` keyword arg tells `os.makedirs()` to do nothing if dir already exists, preventing any deletion/modification of existing data.
+
+
+## Old Version
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+# output_dir (str): directory in which to save parameter files
+# Make dir if it doesn't exist.
+
+
+##
+reader = csv.DictReader(csv_file)
+Make instance of `csv.DictReader` class (make `csv.DictReader` obj)- obj designed to read CSV files in dict-like format.
+`reader` obj reads file line by line & returns ea row as dict.
+Dict keys are col headers from 1st row & vals are data in ea cell of current row.
+
+`csv.DictReader(csv_file)` fn call is class constructor- makes obj of `csv.DictReader` class.
+`reader` obj reads file line by line & returns ea row as dict.
+Dict keys are col headers from 1st row & vals are data in ea cell of current row.
+This approach is beneficial for accessing data by col names.
+`reader` obj is iterator that processes CSV file row by row.
+Can't directly view `reader` obj- to view its contents, can iterate over it in loop & print ea row.
+
+iterable- any obj you can loop over, eg list, tuple, string, dicts
+An iterable has method called `__iter__()` that returns an iterator. When you loop over an iterable, Python automatically calls this method to get an iterator.
+Iterables don't necessarily support random access to their elements; they just need to provide way of producing iterator that can go through its elements.
+random access- directly access element at any index
+
+iterator- obj that represents stream of data; can call its `__next__()` method to get next item in stream. When there are no more items left, it raises `StopIteration` exception.
+Iterator is itself iterable because it implements `__iter__()` method. In most cases, iterators simply return themselves (`return self`) in this method. Any obj that has both `__iter__()` & `__next__()` methods is an iterator.
+
+
+##
+with open(template_file_name, 'r') as file: # Open template file in read mode.
+    template_content = file.read() # Read file's entire content into 1 str.
+
+Obj returned by `open()` is commonly referred to as 'file obj'- instance of file class (specifically, `_io.TextIOWrapper` for text files inc CSV files). Obj serves as handle to file & provides methods to interact w/ its contents.
+`.read()` method reads entire file's content & returns it as 1 str.
+`template_content` is str var holding text from template file.
+
+
+##
+if key not in ['ID', 'Sel_Coeff_ID']:
+Check whether `key` var does not match any element in list ['ID', 'Sel_Coeff_ID'].
+Check if current col is no 'ID' or 'Sel_Coeff_ID'- skip these cols, as they're not used to replace placeholders in template.
+For each row, the first column is a number - a unique identifier ('ID') for that parameter set.
+2nd col ('Sel_Coeff_ID') contains unique label for set of selection coefficients used in one run.
+[
+Sel coeff is target var for NNs (var we train NNs to predict).
+So, this param inherently comprises multiple vals within single experimental run, unlike other sim params.
+Ea unique identifier, like '0_400' or '200_400', represents combination of sel coeff classes (in bin classification) or min & max limits of a val range (regr model).
+]
+
+`if`: start of conditional statement, used to execute code block only if specified condition is true.
+`not in` membership operator: When used w/ `if`, tests if val does not exist within a sequence. Returns `True` if the val is not found in the sequence & `False` otherwise.
+
+Lists (type of iterable) are defined by square brackets `[]` & can hold multiple items, which can be of various types (nrs, strings, other lists, etc).
+`['ID', 'Sel_Coeff_ID']`: list containing 2 strings, representing col names to exclude from a processing step.
+
+`if key not in ['ID', 'Sel_Coeff_ID']` checks if current col name stored in `key` is neither 'ID' nor 'Sel_Coeff_ID'.
+If `key` is different to both these strings, condition evaluates to `True`, & code block following `if` statement will execute.
+
+(
+`key` var is defined earlier in code as part of loop that iterates over items in dict.
+Represents col name from CSV file.
+Ea loop iteration assigns new col name to `key`.
+
+This logic is used to skip over specific cols during operations like replacing placeholders in template file.
+'ID' & 'Sel_Coeff_ID' serve specific roles (file naming or identifiers) & aren't mentioned in template file.
+)
+
+
+##
+placeholder = f'{{{key}}}'
+`f'{{{key}}}'`- use f-string to make str matching placeholder, eg '{SELRANGE}'. Need 3 braces as 1 brace used for formatting in f-strings- to inc literal brace, need to double it.
+
+In Python, strings come in 2 main forms: string literals & string variables.
+string literal- sequence of chars directly written in code
+'literal'- str is fixed/unchanging part of program- it's 'literally' what you see in source code.
+string variable- str whose value can change & may not be directly visible in source code
+
+f-string (formatted string literal)- special type of str literal- way to embed expressions, like vars, within str literal
+When use f-string, you start w/ str literal that contains placeholders for dynamic content (where expressions, like vars, get embedded).
+Despite containing dynamic content, f-strings remain literals; when evaluated, resulting str is fixed literal, not var.
+
+
+##
+modified_content = modified_content.replace(placeholder, value)
+Replace placeholder in `modified_content` w/ actual val from CSV. This customises template file w/ specific param vals for current row.
+
+`string.replace(old, new)`- built-in str method used to replace specified phrase w/ another specified phrase within str.
+Params:
+`string`- original str where replacement is to be performed
+`old`- substring to be searched for & replaced
+`new`- substring that will replace ea occurrence of `old`.
+
+
+##
+new_file.write(modified_content)
+Write `modified_content` str to file.
+`modified_content` contains updated template text & it's saved in new file.
+
+`open()` fn makes file obj in write mode.
+`.write()` method of file obj takes 1 str arg & writes content of str into file, overwriting any existing content.

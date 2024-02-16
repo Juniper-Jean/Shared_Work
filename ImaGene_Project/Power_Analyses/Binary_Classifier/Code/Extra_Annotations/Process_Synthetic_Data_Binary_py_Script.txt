@@ -1,0 +1,166 @@
+# Extra Annotations for Process_Synthetic_Data_Binary.py Script
+2024 Feb 5
+
+# `process_simulations_binary` Fn
+##
+gene_sim.filter_freq(0.01)
+# gene_sim.summary()
+# gene_sim.plot()
+# Remove genetic variants (SNPs) w/ minor allele frequency (MAF) <1% -removes monomorphic sites, singletons, & other rare variants w/ MAFs <1%.
+# This filtering is standard practice in genomic studies.
+# It simplifies dataset by focusing on more common variants, which are generally more informative & less likely to be noise or sequencing errors.
+
+monomorphic site- site in genome w no variation among indivs sampled. Every indiv has same allele- same nucleotide at that position.
+These sites aren't informative for studies of genetic diversity.
+MAF at monomorphic site is 0% because there's no minor allele; there's only 1 allele.
+
+singleton- an allele at a particular SNP that's observed only once within sampled pop.
+Could be rare genetic variant informative about recent mutation or pop hist, or could be noise or sequencing error.
+In dataset w many indivs, frequency of singleton will be v low, much <1%.
+
+In practice, for ML applications in genomics:
+Monomorphic sites are often excluded because they provide no discriminatory power or information for models.
+Decision to inc/exc singletons depends on study's aims & data quality.
+If data quality is high & study is focused on fine-scale pop struct or recent evolutionary events, singletons may be included.
+But, for many applications, they are excluded to reduce noise & potential for overfitting on rare, spurious data pts.
+
+Rare variants appear infrequently in pop, but >once.
+Whether or not cmd removes rare variant depends on its frequency.
+If its MAF is <1%, it'll be removed. If it's more frequent, it'll be retained.
+
+
+##
+# gene_LCT.sort?
+# `gene_LCT.sort?` or `?gene_LCT.sort`: In IPython terminal In IPython terminal & Jupyter notebooks, question mark before/after obj, fn, or method is used to display docstring or documentation related to that object.
+
+gene_sim.sort('rows_freq')
+# gene_sim.summary()
+# gene_sim.plot()
+# `.sort()` method of `ImaGene` class rearranges data within ea genomic image based on specified criterion.
+# It operates on ea image individually.
+# Sorting structures data in meaningful way, potentially making it easier for ML models to identify/learn genetic patterns.
+
+specified criterion (like frequency or distance)
+, eg frequency of haplotypes (rows) or genetic variants (cols), or their genetic distances.
+
+Method can sort either rows (haplotypes) or cols (genetic variants).
+Sorting can be based on either frequency ('rows_freq', 'cols_freq') or distance ('rows_dist', 'cols_dist').
+
+Sorting by row frequency ('rows_freq' arg) sorts ea set of genetic data in `self.data` by frequency of unique rows.
+It counts occurrences of ea unique row, then rearranges rows, starting w most frequent.
+'cols_freq': similar to 'rows_freq', but operates on cols instead.
+
+Sorting by distance focuses on genetic distance from most common pattern in ea set of genetic data.
+Sorting by row distance ('rows_dist') sorts rows (haplotypes) in ea image by genetic distance from most common haplotype.
+Identifies most frequent row in ea set of genetic data, using `numpy` to find unique rows & count their occurrences.
+Treats most frequent row as 'top' or reference row.
+Calculates genetic distance of ea unique row from most frequent row.
+Distance is measured as mean absolute difference between vals of reference row & ea unique row.
+Reorders rows based on distances, w rows more similar to most frequent row (smaller distance) placed 1st.
+
+Sorting by 'rows_dist' is useful for visualising pop's genetic diversity & struct.
+It helps for understanding genetic (dis)similarity of ea indiv's genetic profile compared to most common profile (haplotype) (understanding genetic relationships within dataset).
+It can highlight outliers or clusters of similar haplotypes.
+
+
+##
+# gene_sim.resize? # See different options for resizing.
+gene_sim.resize((198, 192))
+# gene_sim.summary()
+# gene_sim.plot()
+# Resize all images in `ImaGene` obj to uniform dimension.
+# `ImaGene` tut, '01_binary.ipynb', resized all images to have shape (198, 192) (198 rows, 192 cols) to match dims of real data used in analysis.
+# In context of this power analysis w/o real data, we retain these dims for simplicity & to maintain consistency.
+# If deploying model on real genomic data, it's essential to adjust `.resize()` dims for training data to match dims of real data.
+# This ensures compatibility & accuracy in model's application to real datasets.
+
+Chosen dims for resizing follow standard set in `ImaGene` tut.
+We retain these dims to maintain consistency w established methodology in `ImaGene` tut.
+
+
+##
+gene_sim.convert(flip=True)
+# gene_sim.summary()
+# gene_sim.plot()
+# Use `.convert` method of `ImaGene` obj w/ `flip=True` keyword arg.
+# Converts images to proper numpy float matrices- from `uint8` format (integer vals from 0 to 255) to `float32` format (floating-point nrs).
+# Additionally, `flip=True` keyword arg reverses pixel vals to assign black to the alternate allele.
+# This ensures data is in format suitable for ML alg & enhances clarity of genetic patterns.
+# Flipping aligns w standard representation of genomic data where minor alleles are often marked distinctly for better interpretability.
+
+# (Understanding) Data Representation in `ImaGene`
+Initially, `ImaGene` uses `uint8` nr format to represent genetic data as grayscale images in binary-like manner.
+Ea pixel's intensity (in these images) signifies presence or absence of an allele (presence of the alternate allele- gene variant that's not most common in pop- at a specific location):
+- 0 (corresponds to black in grayscale image) denotes to the reference/major allele (more common genetic variant in pop)- absence of the alternate allele.
+- 255 (white) denotes presence of the alternate/minor/derived allele (newer or less frequent variant).
+
+
+## Data Type Conversion for Machine Learning
+Conversion from `uint8` to `float32` is common practice when processing data for ML.
+ML algs, inc NNs, operate more effectively on floating-point nrs.
+Mathematics of these algs is continuous, not discrete, & best approximated w floating-point nrs.
+Integers may be implicitly converted to floating-point nrs somewhere in pipeline to ensure type compatibility for operations.
+But, it's better (more transparent) to explicit about data types.
+
+Normalising (scaling) input vals to range [0, 1] (bw 0 & 1) is another key step.
+It ensures input vals remain within consistent range, which promotes faster, more stable convergence of learning algorithm during training.
+
+
+## `uint8` & `float32` Nr Formats
+`uint8` (unsigned 8-bit integer) format represents integer vals from 0 to 255.
+Commonly used in image processing, as ea pixel val in grayscale image can be represented in this range (0 for black, 255 for white).
+
+`float32` (32-bit floating-point nr) format represents real nrs (nrs w fractional parts).
+Important for computations in ML & scientific computing where precision of real nrs matters.
+`float32` can represent very wide range of nrs, from v small fractions to v large nrs.
+Provides good lv of precision for most numerical computations, but it's not as precise as `float64`. (`float64` uses 64 bits to represent floating-point nrs & thus can represent nrs more precisely, but at cost of more memory.)
+Strikes good balance by offering wide range of representable nrs w sufficient precision for most applications, wo memory overhead of higher precision formats like `float64`.
+This makes it popular choice in ML.
+
+
+## Flipping Pixel Vals
+We flip black & white pixels to assign black to minor (or derived) alleles, which is standard practice in genomic studies.
+Flipping:
+- aligns w standard representation of genomic data where minor alleles are often marked distinctly (here, w dark shade in visualisations)
+- makes data more intuitive: focusing on derived alleles is often more informative for insights into evolutionary processes & natural selection.
+- may potentially make certain genetic patterns more recognisable or easier to learn, catering to specific needs of ML alg.
+
+Before flipping (initial representation), a pixel intensity of 0 (black) represents the (major allele) absence of the alt allele (major allele), & 255 its presence.
+After flipping (`flip=True)`, representation is reversed, w 0 indicating presence of the alt allele & 255 representing the absence (major allele).
+
+`flip` is optional param of `.convert` method
+Param: In fn/method definition, param is named var used to accept vals.
+Arg: actual val you pass to fn/method.
+Keyword arg: arg passed to fn/method using `key=value` format.
+
+Param is optional if it's not mandatory to specify it when calling fn/method. Optional params usually have default vals defined in fn/method definition. (If caller doesn't provide val for optional param, default val is used.)
+Provide flexibility, allowing fn/method calls to be customised, while also providing sensible default behaviour.
+
+`flip=True` is keyword arg where `flip` is optional param of `.convert` method & `True` is specific arg you pass.
+If you don't specify `flip` when calling `.convert`, method will use default val set for `flip` in its definition (`True`/`False` depending on how method is defined).
+By explicitly calling `.convert(flip=True)`, you're using keyword arg to set `flip` param to `True`, overriding any default val.
+
+
+##
+gene_sim.subset(get_index_random(gene_sim))
+# gene_sim.summary()
+# gene_sim.plot()
+# Randomise order of genomic images in `gene_sim` obj.
+# This is crucial for training ML models, as it prevents model from learning any order-specific biases & helps in generalising better to new, unseen data.
+# `gene_sim.subset(get_index_random(gene_sim))` randomly reorders collection of genomic images in entire dataset, but doesn't alter data within ea indiv image.
+
+# `gene_sim.subset(get_index_random(gene_sim))` 1st calls `get_index_random(gene_sim)` on `ImaGene` obj to generate randomly ordered array of indices corresponding to genomic images in `gene_sim`.
+# `gene_sim.subset(...)` then rearranges images based on this random sequence.
+# `get_index_random` fn in `ImaGene.py` module
+# `ImaGene.subset()` method (of `ImaGene` class)
+
+`get_index_random` fn in `ImaGene.py` module generates random permutation of indices for genomic images.
+Params:
+-`genes`- instance of `ImaGene` class
+-`length`- optional- specifies length of random index array. If not provided, it defaults to nr of images in `genes`.
+It calculates length of dataset (nr of images) if not provided.
+Uses `np.random.permutation(length)` to generate randomly shuffled array of indices ranging from 0 to `length-1`.
+
+`ImaGene.subset()` method (of `ImaGene` class) reorders genomic images in `ImaGene` obj based on array of indices.
+Takes array of indices & rearranges entire collection of genomic images according to these indices.
+It affects order of images in dataset, not internal data of ea image.

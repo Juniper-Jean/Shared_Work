@@ -1,0 +1,411 @@
+# Extra Annotations for Train_Model.py Script
+2024 Feb 13
+
+
+# `build_model` Fn
+#----
+# Build & compile Keras Sequential model.
+#----
+
+see 'Build_Keras_Sequential_Model.txt'
+
+
+## 
+model.compile(optimizer='rmsprop', loss='binary_crossentropy', 
+              metrics=['accuracy'])
+Compile model & specify settings- optimisation algorithm to use, loss fn to be minimise during training, & performance metrics to evaluate during training & testing.
+Binary crossentropy is used for binary classification tasks & measures performance of model whose output is probability val b/w 0 & 1.
+Accuracy measures fraction of correctly classified instances.
+
+`model.compile(...)` method of Keras Model class
+Compiles model & specifies settings- optimisation algorithm to use, loss fn to be minimise during training, & performance metrics to evaluate during training & testing.
+
+Params:
+`optimizer='rmsprop'`: RMSprop is popular gradient descent variation that maintains moving average of square of gradients & divides gradient by square root of this average to adjust learning rate dynamically.
+
+`loss='binary_crossentropy'`: Binary crossentropy is used for binary classification tasks & measures performance of model whose output is probability val b/w 0 & 1.
+
+`metrics=['accuracy']`: Here, accuracy measures fraction of correctly classified instances.
+
+
+## 
+model_tracker = ImaNet(name='[C32+P]x2+[C64+P]+D128')
+# Instantiate `ImaNet` obj.
+
+`name` param- descriptive name for model configuration/architecture
+'[C32+P]x2+[C64+P]+D128': 2 convolutional layers w/ 32 filters followed by pooling, then 1 convolutional layer w/ 64 filters followed by pooling, & finally dense layer w/ 128 units.
+`ImaGene` tut, '01_binary.ipynb': 'we can build a model in keras with convolutional, pooling and dense layers. In this example we have 3 layers of 2D convolutions and pooling followed by a fully-connected layer.'
+
+
+##
+`model.summary()`
+Print summary of model's architecture.
+Incs layers, their types, output shapes, & nr of params (both trainable & non-trainable) in ea layer.
+
+method of Keras `model` class
+Provides quick overview of model's structure.
+This useful for verifying architecture of complex models & ensuring dims throughout model align.
+
+
+##
+plot_model(model, os.path.join(path_results, 'net.binary.png'))
+
+`plot_model` fn from `keras.utils` module in Keras library
+generates graphical visualisation of model's architecture & saves it to file.
+Params:
+`model`: `model` obj to be visualise.
+
+*`plot_model(model, path + 'net.binary.png')`
+path + 'net.binary.png': The file path where the plot should be saved.
+It concatenates a base path (path) with the filename ('net.binary.png'), specifying the location and name of the output image file.
+
+Together, these steps compile the model for training, set up a mechanism for tracking its performance, provide a detailed view of the model's structure, and create a visual representation of its architecture.
+
+
+##
+model.save(os.path.join(path_results, 'model.binary.h5')
+Save trained Keras model to disk.
+
+method of Keras model class
+Saves current state of Keras model to disk.
+Serialises model to file in HDF5 format ('.h5' extension)- versatile data storage format that can store big amounts of data, including model's architecture, weights, & training configuration.
+
+
+model = load_model(os.path.join(path_results, 'model.binary.h5')
+Load model from file.
+Deserialise model file back into Keras model obj.
+`load_model` fn from `keras.models` module
+Allows for continuation of training, evaluation, or inference w/o needing to rebuild model from scratch.
+
+
+model_tracker.save(os.path.join(path_results, 'model_tracker.binary'))
+`.save(file)` method of `ImaNet` class serialises & saves `ImaNet` obj for later retrieval & analysis.
+Construct file path where obj is saved, using `path_results` var.
+
+Serialise & save `ImaNet` obj.
+`file` param- file path where obj is saved.
+
+model_tracker = load_imanet(os.path.join(path_results, 'model.binary.h5')
+Deserialise & load `ImaNet` obj from binary file.
+
+(
+Save/load model & `ImaNet` (`model_tracker`) obj to/from disk.
+model.save(path + 'model.binary.h5')
+model = load_model(path + 'model.binary.h5')
+
+
+model.save(path + 'model.binary.h5')
+
+model = load_model(path + 'model.binary.h5')
+You can also save the network itself (and load it).
+
+net_LCT.save(path + 'net_LCT.binary'); # difference between trained model & network?
+
+net_LCT = load_imanet(path + 'net_LCT.binary')
+)
+
+
+#
+When fn returns >1 var/obj, it packages them into tuple.
+Tuples can hold elements of different types.
+
+When fn returns & you assign outputs to vars, this is known as 'tuple unpacking' or 'multiple assignment'.
+It allows you to capture ea element of tuple in separate var in single statement, matching order in which they were packed.
+
+Eg:
+```
+def get_user_data():
+    return 'John Doe', 30, 'johndoe@example.com'
+# Fn returns 3 vals.
+
+name, age, email = get_user_data()
+# Unpack fn's return vals into 3 vars.
+# `name` holds 'John Doe', `age` 30, & `email` 'johndoe@example.com'.
+```
+
+
+# `train_model` Fn
+##
+for i in range(1, 10):
+# We split ea set of (synthetic) training data into batches, so we can train 
+# a neural network with a 'simulation on-the-fly' approach.
+# Loop over nrs 1 to 9- iterate over batches.
+# Train on 1st 9 batches.
+# Reserve 10th batch for testing model's performance after training.
+
+Train model iteratively on batches of data.
+This approach can be useful when dealing w/ big datasets that may not fit into memory all at once.
+
+
+##
+batch_path = os.path.join(path_sim, f'Simulations{i}', f'gene_sim_Batch{i}.binary')
+# Construct path to batch of (processed, synthetic) data.
+
+with open(batch_path, 'rb') as file:
+    gene_sim = pickle.load(file)
+# Deserialise data- `ImaGene` obj.
+# `process_simulations` fn in 'Process_Synthetic_Data' Python script 
+# called, for ea data batch, `.save()` method of `ImaGene` class to save it.
+# The method uses `pickle` module to serialise `ImaGene` (`gene_sim`) obj & save it in binary format.
+
+`open()` is built-in Python fn used to open file & return corresponding file obj.
+`open()` fn is standard way to obtain file obj in Python, which can then be used for various file operations, eg reading or writing.
+'rb' mode stands for 'read binary'- open file in binary read mode.
+
+`pickle` module provides way to serialise (pickle) & deserialise (unpickle) Python objects.
+Serialisation converts Python obj into byte stream (to save it to file or transmit it over network).
+Deserialisation converts serialised byte stream back into Python obj.
+When you use pickle to serialise & save Python obj, it's typically to binary format.
+(
+When you use `pickle.dump()` to write obj to file, file is binary.
+`pickle` module implements binary protocols for (de-)serialising Python obj. 
+)
+
+`pickle.load()` fn deserialises obj from file.
+It requires a file obj to read from & `open()` fn makes that file obj.
+W/o opening file 1st, `pickle.load()` wouldn't have stream to read serialised obj data from.
+File passed to `pickle.load()` must be binary file.
+
+
+##
+#----
+# Initiate model training on 1 data batch.
+#----
+score = model.fit(gene_sim.data, gene_sim.targets, batch_size=64, 
+                  epochs=1, validation_split=0.10, verbose=1)
+Initiate training for model on 1 data batch.
+`model` is instance of Keras Sequential model class (linear stack of layers).
+`.fit` method trains model for specified nr of epochs (iterations over the data).
+Adjusts model's weights to minimise loss fn.
+
+Within ea epoch, entire dataset is divided into subsets ("mini-batches").
+Splitting is sequential by default, taking 1st 64 samples, then next 64, & so on, until it has processed all samples.
+Model updates occur after ea subset has been processed.
+Epoch is completed when model has been exposed to every sample in dataset once.
+
+After ea epoch, model uses portion of data specified by `validation_split` (10% here) to evaluate its performance.
+
+
+# Here, `model` is instance of Keras Sequential model class.
+This class allows for building models by stacking layers on top of ea other in linear sequence.
+Linear arrangement is simple, straightforward model design.
+It's ideal for:
+- building CNN where ea layer's output serves as input for next layer
+- feedforward NNs where data flows in 1 direction from input to output.
+
+While architecture is linear stack (meaning layers are stacked sequentially), operations within layers introduce non-linearity- crucial for learning complex patterns in data.
+Model can capture non-linear relationships due to non-linear activation fns (eg, ReLU, sigmoid, tanh) used within layers.
+Besides linear (sequential) stacking of layers, there's also non-linear topology for building NNs.
+Eg, models that have branches, loops, or merge layers- more complex data flows & architectures.
+
+
+
+# `.fit` Method
+Trains model for specified nr of epochs (iterations/cycles over the data).
+Iterates through the data (`gene_sim.data` as input features & `gene_sim.targets` as output labels) a specified nr of times (epochs).
+Essentially, this process adjusts model's weights to minimise loss fn, learning from training data.
+
+Params:
+- `x`- input data/features (here, `gene_sim.data`)
+- `y`- true labels / target data (here, `gene_sim.targets`). This is what model's predictions are compared against to compute accuracy.
+- `batch_size`- nr of samples to process before updating internal model parameters
+- `epochs`- how many times to iterate over the dataset
+- `validation_split`- fraction of training data to use as validation data. Method doesn't use this subset for training, but to evaluate model's performance (loss & any other metrics being monitored) after ea epoch.
+
+Within ea epoch, entire dataset is divided into subsets ("mini-batches").
+Splitting is sequential by default, taking 1st 64 samples, then next 64, & so on, until it has processed all samples.
+Model updates occur after ea subset has been processed.
+Batched approach is crucial for managing memory usage & often leads to faster convergence in training.
+
+Epoch is completed when model has been exposed to every sample in dataset once.
+Model will see entire dataset once per epoch.
+If nr of epochs is 10, model will go through entire dataset 10 times.
+Ea epoch starts anew with the first sample.
+
+After ea epoch, model uses portion of data specified by `validation_split` (10% here) to evaluate its performance.
+Validation step is crucial for monitoring how well model is generalising to new, unseen data.
+It helps identify if model is overfitting to training data.
+
+[
+Initiate training for model on 1 data batch.
+
+`model` is instance of Keras Sequential model class.
+This class allows for building models by stacking layers on top of ea other in linear sequence.
+It's ideal for:
+- building CNN where ea layer's output serves as input for next layer
+- feedforward NNs where data flows in 1 direction from input to output.
+
+Trains model for specified nr of epochs (iterations over the data).
+Adjusts model's weights to minimise loss fn.
+
+Within ea epoch, entire dataset is divided into subsets ("mini-batches").
+Splitting is sequential by default, taking 1st 64 samples, then next 64, & so on, until it has processed all samples.
+Model updates occur after ea subset has been processed.
+Epoch is completed when model has been exposed to every sample in dataset once.
+Batched approach is crucial for managing memory usage & often leads to faster convergence in training.
+
+After ea epoch, model uses portion of data specified by `validation_split` (10% here) to evaluate its performance.
+Validation step is crucial for monitoring how well model is generalising to new, unseen data.
+It helps identify if model is overfitting to training data.
+]
+
+
+# For both `model.fit` & `model.evaluate` methods in Keras API, `verbose` param controls verbosity of method's execution output.
+Param can take several integer vals:
+`verbose=0`: silent mode- no output shown during training or evaluation
+
+`verbose=1`: progress bar mode
+During training (`model.fit`), this shows, for ea epoch, progress bar that updates, plus loss & any other metrics being monitored at end of epoch.
+During evaluation (`model.evaluate`), it shows progress bar indicating evaluation progress.
+
+`verbose=2` prints 1 line per epoch w/o progress bar.
+For `model.fit`, this prints, for ea epoch, 1 line of output, showing epoch nr, total nr of epochs, & loss & metrics vals after epoch.
+For `model.evaluate`, it prints loss & metrics vals once evaluation is complete.
+
+Difference b/w settings lies in (verbosity) amount of feedback provided to user about training or evaluation process.
+`verbose=1` is more informative for tracking training progress, esp for longer training sessions, as it gives continuous feedback.
+`verbose=2` is more concise, providing essential info w/o visual progress bar, making it more suitable for automated logs or when you prefer less cluttered output.
+
+
+##
+model_tracker.update_scores(score)
+Record training & validation metrics (eg, loss & accuracy) obtained from current training session into `model_tracker`.
+
+`model_tracker` is instance of `ImaNet` class, which is designed to track & store these metrics over time.
+`score` obj is result returned by `model.fit()` method during training of Keras model.
+It contains history of training & validation metrics for ea epoch, eg loss & accuracy.
+`update_scores` method of `ImaNet` class updates `model_tracker` obj w/ training & validation metrics from current training batch.
+
+
+Record training & validation metrics (eg, loss & accuracy) obtained from current training session into `model_tracker`.
+
+`model_tracker` is instance of `ImaNet` class, which is designed to track & store these metrics over time.
+
+`score` obj is result returned by `model.fit()` method during training of Keras model.
+It contains history of training & validation metrics for ea epoch, eg loss & accuracy.
+It's typically a dict where keys are names of metrics & vals are lists of metric vals for ea epoch.
+This history allows for evaluation of model's performance over time, providing insights into how well model is learning & generalising to validation data.
+
+`update_scores` method of `ImaNet` class updates `model_tracker` obj w/ training & validation metrics from current training batch.
+Appends metrics from `score` obj (this batch's performance metrics) to `model_tracker`'s internal log for later analysis (allowing for comprehensive tracking & analysis of the model's training progress over time).
+
+
+##
+model_tracker.plot_train(os.path.join(path_results, 'training_plot.png'))
+Plot training & validation loss & accuracy over epochs.
+Save plot to `path_results` dir.
+
+`plot_train` method of `ImaNet` class
+produces visualisations that help in diagnosing training behavior, eg, identifying if the model is learning effectively, overfitting, or underfitting.
+understanding performance dynamics of model across training epochs
+providing insight into model's learning process across ea epoch
+
+
+# `evaluate_model` Fn
+##
+test_loss, test_accuracy = model.evaluate(gene_sim_test.data, gene_sim_test.targets, verbose=2)
+Evaluate model's performance on test dataset.
+Assign resulting loss & accuracy metrics to `test_loss` & `test_accuracy` respectively.
+
+Assign output of `model.evaluate` method to 2 vars, `test_loss` & `test_accuracy`.
+These vars store loss val & accuracy metric calculated by evaluating trained model on test dataset not seen during training.
+
+`model.evaluate` method of Model class in Keras API evaluates model's performance on given dataset.
+Returns loss val & any additional metrics specified during model compilation, eg accuracy, for model in test mode.
+Params:
+- `x`- input data on which to evaluate model performance (here, `gene_sim_test.data`)
+- `y`- true labels of test dataset (here, `gene_sim_test.targets`).
+
+This step is for understanding how well model performs on set of unseen data (test dataset) in terms of its primary objectives, such as minimising loss & maximising accuracy or other metrics.
+
+
+# Both `model.evaluate` & `model_tracker.predict` are part of testing phase (evaluating trained model's performance), but they serve different purposes:
+
+`model.evaluate` method directly evaluates model's performance on given dataset.
+It gives immediate feedback on how well model generalises to new data (quantitative assessment of model performance).
+
+After evaluating model to get overall performance metric, you may want to use `.predict` to generate predictions.
+`.predict` method is part of `ImaNet` custom class & uses model to make predictions on new, unseen data.
+Focus is on generating outputs (predictions) that can be compared against true vals to assess model performance in more detail.
+You can analyse these predictions in various ways, eg by making confusion matrix, calculating other performance metrics manually, or examining cases where model performed well or poorly.
+
+`model.evaluate` provides quick, overall summary of performance, while `model_tracker.predict` & subsequent analysis (like generating confusion matrix) offer deeper dive into model's predictive behavior on case-by-case basis (more detailed look into how model is making its predictions).
+
+
+##
+model_tracker.predict(gene_sim_test, model)
+Use trained model to predict outcomes on test dataset (`gene_sim_test`).
+Store predictions within `model_tracker` obj for further analysis.
+`.predict` method is part of `ImaNet` class.
+
+`.predict(data, model)` method of `ImaNet` class- params:
+`data`- dataset on which to make predictions, typically unseen data
+`model`- trained model used to make predictions.
+
+
+##
+model_tracker.plot_cm(gene_sim_test.classes, file=os.path.join(path_results, 'confusion_matrix.png'), text=True)
+Generate confusion matrix plot, used to evaluate performance of classification models.
+It shows nr of correct & incorrect predictions made by model compared to actual outcomes.
+
+`.plot_cm(classes, file, text)` method of `ImaNet` class generates confusion matrix plot comparing predicted & actual class labels on test dataset.
+Params:
+`classes`- the distinct classes in dataset
+`file`- path where confusion matrix plot is saved
+`text`- boolean indicating whether to display numeric values within confusion matrix cells.
+
+
+# `.classes` & `.targets` attributes of `ImaGene` class serve distinct but related purposes.
+`.targets` holds actual labels/outcomes (that the model aims to predict) for ea sample in dataset.
+Used both for training & evaluation.
+For sim data, targets are generated as part of sim process.
+If we deploy model to make predictions on new, unseen data (real-world VCF file), `.targets` may not be available.
+
+`.classes` (is derived from) holds the unique vals within `.targets` array.
+Useful for calculating metrics like confusion matrices (evaluating model's performance).
+(
+Stores the distinct classes that the model can predict.
+range of possible outcomes
+Used to understand diversity of dataset.
+list of unique classes present in dataset
+Defines scope of predictions model can make by enumerating all unique outcomes it should recognise.
+Eg, if model is designed to predict whether genomic segment is under positive selection, negative selection, or neutral, `.classes` would contain these 3 vals.
+)
+
+
+# How to Interpret Confusion Matrix
+Confusion matrix used to evaluate performance of classification models.
+It shows nr of correct & incorrect predictions made by model compared to actual outcomes.
+(Provides insight into model's performance across different categories.)
+
+Nrs in boxes: ea cell in matrix represents count of predictions made by model for ea actual class.
+Rows represent actual classes, while cols represent predicted classes.
+true negatives (top left)- count of correctly predicted negative outcomes
+false positives (top right)- count of negative outcomes incorrectly predicted as positive
+false negatives (bottom left)- count of positive outcomes incorrectly predicted as negative
+true positives (bottom right)- count of correctly predicted positive outcomes.
+
+Colour intensity (visual representation) indicates magnitude of vals in ea cell.
+Darker colours may indicate higher nrs (depending on colour scheme; more correct predictions for TP & TN, or more errors for FP & FN).
+Lighter colours indicate lower nrs.
+
+
+Diagonal cells (top left to bottom right; TP & TN) represent correct predictions.
+Ideally, these cells should have higher nrs, indicating that the model accurately predicts both positive & negative outcomes.
+Off-diagonal cells (FP & FN) represent errors or misclassifications by model.
+Lower nrs in these cells indicate better model performance.
+
+Balance b/w TP, TN, FP, & FN provides insight into model's overall performance.
+High vals in TP & TN relative to FP & FN suggest good performance.
+You can gauge from confusion matrix not only overall accuracy of model, but also its sensitivity (ability to detect positive outcomes) & specificity (ability to detect negative outcomes), among other metrics.
+
+
+##
+return test_loss, test_accuracy
+`return` statement specifies vars that fn outputs when it finishes executing.
+
+
+# `save_metrics_to_csv` Fn
+
+
+# `main` Fn

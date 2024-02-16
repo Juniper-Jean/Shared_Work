@@ -1,0 +1,102 @@
+# Directories
+DIRMSMS="/Users/cpenning/My_Tools/msms/lib/msms.jar" # path to msms.jar (MSMS JAR file- Java application)
+
+# Demographic Model
+NREF=10000 # reference effective population size
+
+
+DEMO='-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2'
+# Demographic model in MSMS syntax: represents a pop that underwent a reduction to 20% of its original size at 0.075 * 4N_e generations ago, followed by an expansion to double its original size in the present.
+
+# MSMS uses specific syntax to define demographic models.
+# Demographic events are specified using `-eN t x` format, where `eN` cmd represents a demographic event- specifies a change in the effective population size (N_e).
+# `t`- time at which demographic event occurs, measured in units of 4N_e generations ago
+# `x`- factor by which N_e is scaled at time `t`
+
+# `DEMO='-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2'`- a series of demographic events:
+# `-eN 0.0875 1`: At time 0.0875 * 4N_e generations ago, the pop size was scaled to 1 * N_e (ie, no change from the reference pop size).
+# `-eN 0.075 0.2`: At a slightly earlier time, 0.075 * 4N_e generations ago, the pop size was scaled to 0.2 * N_e, indicating a reduction to 20% of the reference population size.
+# `-eN 0 2`: At the present time (0), the pop size is scaled to 2 * N_e, indicating the pop size is currently double the reference popu size.
+# This specific demographic model represents a pop that experienced a bottleneck (reduction in size) in the past, followed by a recovery or expansion to a size larger than the original reference pop size.
+
+# Demographic history, such as pop bottlenecks & expansions, can significantly impact patterns of genetic variation & mimic the signals of natural selection.
+# Training a ML model on data that includes these complexities ensures it's better equipped to differentiate between the effects of demographic history & selection in real-world data.
+# Using a complex & realistic model will enhance the ability of your ML model to make accurate predictions in real-world scenarios.
+
+
+# Locus & Sample Size
+LEN=80000
+# length of DNA sequence (genomic locus) being simulated
+# unit: base pairs (bp)
+
+THETA=48
+# scaled mutation rate per locus per generation (for locus of interest / simulated locus)
+# Calculated as 4*N_e*μ*L, where N_e is effective pop size, μ is mutation rate per base pair per generation, & L is locus length in bp.
+# Eg, mutation rate (μ) of 1.5e-8 mutations per base pair per generation, for effective pop size (N_e) of 10 000 & locus length (L) of 100 000 bp gives theta of 60.
+# THETA=48 means product of 4N_eμL is 48.
+# unitless, but encapsulates dimensions of pop size, mutation rate, & locus length
+
+RHO=32
+# scaled recombination rate per locus per generation (for locus of interest / simulated locus)
+# Calculated as 4*N_e*r*(L-1), where N_e is effective pop size, r is recombination rate per base pair per generation, & L is locus length in bp minus 1.
+# Eg, recombination rate (r) of 1e-8 recombinations per base pair per generation, for effective pop size (N_e) of 10 000 & locus length (L) of 100 000 bp gives rho of 32. RHO=32 means product of 4N_er(L-1) is 32.
+# unitless, but reflects dimensions of pop size, recombination rate, & locus length
+
+
+NCHROMS=198
+# nr of chromosomal copies to simulate- total nr of haploid genomes (gene copies) in sample
+
+# Relationship bw NCHROMS & NREF in pop-genetics sims:
+# Why NCHROMS is not necessarily equal to NREF * 2:
+# NREF is the effective population size (N_e), a theoretical concept representing the nr of breeding indivs in an idealised pop that'd show the same amount of genetic drift as the actual pop under study.
+# NREF doesn't directly indicate the nr of indivs in the pop, but rather is a param used to scale rates of mutation (θ) & recombination (ρ), & to understand the impact of genetic drift.
+# NCHROMS (nr of chromosomal copies) is the total nr of haploid genomes (gene copies) being simulated.
+# In real-world pops, many organisms, inc humans, are diploid, meaning ea indiv carries 2 sets of chromosomes.
+# But, in simulations, this nr does not necessarily need to be twice the NREF value & can be chosen based on the study's requirements.
+# It's common in population genetics simulations to work with a sample size that is feasible for analysis & that can provide sufficient genetic information.
+# The sample size (NCHROMS) in simulations often does not match the actual population size (NREF * 2) due to eg computational constraints.
+# NCHROMS is a practical param defining the scale of the genetic sample in the sim, which is why NCHROMS is not simply NREF * 2.
+
+
+# Selection
+SELPOS=`bc <<< 'scale=2; 1/2'`
+# Calculate relative position of selected allele within simulated genomic region.
+# Set precision to 2 decimal places.
+# Result of 1/2 will be 0.50.
+# unit: fractional value bw 0 & 1, where 0 represents the start of the locus & 1 represents the end
+
+# `bc`- cmd-line calculator used for mathematical calculations
+# `scale` keyword in `bc` sets nr of decimal places in results.
+
+
+FREQ=`bc <<< 'scale=6; 1/100'`
+# Calculate initial frequency of the selected allele in the pop at the start of the selection process.
+# Result of 1/100 to 6 decimal places is 0.010000.
+# unit: fractional value bw 0 & 1, where 1 corresponds to 100%
+
+SELRANGE=`seq 0 20 20`
+# range of selection coefficients to simulate
+# Selection coefficient measures the relative fitness advantage or disadvantage of the selected allele.
+# unit: usually unitless, representing relative fitness differences (positive for advantageous alleles, negative for disadvantageous alleles)
+# Execute cmd in backticks & assign its output to `SELRANGE` var.
+# `seq FIRST INCREMENT LAST`- cmd used in Unix-like systems- generates sequence of nrs:
+# `FIRST`- sequence's start nr
+# `INCREMENT` (optional)- increment step. If not specified, it defaults to 1.
+# `LAST`- end nr.
+# Eg, `seq 0 300 300` generates sequence from 0 to 300, w/ a step of 300. In this case, it's just 2 vals: 0 & 300.
+
+
+NREPL=1000 # nr of replicates (independent simulations) to run per val of param
+
+TIMERANGE=`bc <<< 'scale=4; 200/40000'`
+# Calculate time of selection event, scaled to 4N_e generations ago.
+# Result of eg 800/40000 to 4 decimal places is 0.0200.
+
+
+NBATCH=10 # nr of batches, used to organise output data
+
+NTHREADS=4
+# nr of processor threads for MSMS simulator to use- using multiple threads can speed up sims by parallel processing
+# MSMS, when invoked w/ `NTHREADS` arg, can utilise multiple threads for its internal computations.
+# This means, within ea sim, MSMS can process different parts of sim simultaneously on different processor threads.
+# Using 4 threads is common choice for systems with quad-core processors.
