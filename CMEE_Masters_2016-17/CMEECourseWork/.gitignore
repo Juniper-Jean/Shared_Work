@@ -1,0 +1,24 @@
+# Ensures certain files are not tracked by Git
+
+
+## Temporary files
+
+*~ 
+# Files ending with a tilde. Many text editors use '~' to mark temporary files.
+
+*.tmp
+
+
+## Cached bytecode files made by CPython
+# (Programming languages are implemented by compilers and interpreters. These convert the language to machine code, used by the computer.
+# CPython compiles to CPython bytecode, which the CPython virtual machine interprets.)
+
+*.pyc
+
+
+##
+*.swp
+
+
+*.RData
+*.Rhistory

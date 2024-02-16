@@ -1,0 +1,41 @@
+# 1.13 Practical, 3.
+
+# 1 Count how many lines are in each file
+wc -l ../Data/*.fasta
+# '../Data' navigates up out of 'Code' directory and down into 'Data'.
+
+# 2 Print everything starting from the second line for the E. coli genome
+tail -n +2 ../Data/E.coli.fasta
+# 'tail' command prints the last 10 lines of a file
+# '-n' option, the last n lines
+# '-n +NUM', starts from line NUM.
+# Command found in module pdf, option in command help page.
+
+# 3 Count the sequence length of this genome
+tail -n +2 ../Data/E.coli.fasta | tr -d "\n" | wc -m
+# '-m' specifies character count.
+# The count includes newline characters, not in the DNA sequence.
+# 'tr' deletes/substitutes characters; '-d "\n"' specifies delete of '\n' (newline characters).
+
+# 4 Count the matches of 'ATGC' sequence in the genome
+tail -n +2 ../Data/E.coli.fasta | tr -d "\n" | grep -o ATGC | wc -l
+# An ATGC sequence, split by a newline character, would not be found.
+# 'grep -c' counted number of lines with matches; '-o' prints each match on a new line -> count lines to count matches.
+# I could not send 'tr' output to a file - it prints in the terminal. But 'grep' works on screen output and the command line is efficient like this.
+
+# 5 Compute the AT/GC ratio
+echo $(tail -n +2 ../Data/E.coli.fasta | grep -o "A\|T" | wc -l) / $(tail -n +2 ../Data/E.coli.fasta | grep -o "G\|C" | wc -l) | bc -l
+# 'echo' prints the text '$x / $y'.
+# 'bc -l' calculates '$x / $y'.
+# 'grep -o "G\|C"' prints matches of G or C.
+
+# Initial attempt of 5
+# This just counted As, Ts, Gs and Cs.
+# tail -n +2 ../Data/E.coli.fasta | tr -d "\n" | grep -o "A\|T\|G\|C" | sort | uniq -c
+# 'sort' sorts lines of text - sorts lines of matches by AT/GC.
+# With '|uniq', each unique line is identified, but repetitions are not listed.
+# '-c' - counts number of ATs/GCs separately.
+# Found on StackExchange.com.
+
+# 'grep -o -e G -e C' = 'grep -o "G\|C"'
+# 'grep -o "AT\|GC"' would specify match AT or GC.

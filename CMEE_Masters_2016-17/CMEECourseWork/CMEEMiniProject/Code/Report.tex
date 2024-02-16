@@ -1,0 +1,633 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=2cm]{geometry}
+\usepackage{lineno} % line numbers
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{url} % to type tilde
+\usepackage{gensymb} % use degrees symbol
+\usepackage{pdfpages}
+
+\renewcommand{\baselinestretch}{1.5} % line spacing
+\renewcommand{\thefootnote}{\roman{footnote}} % footnote numbering in Roman numerals
+
+\begin{document}
+
+\begin{titlepage}
+	\begin{center} % Align to the centre
+		\vspace*{1cm} % Leave a gap between the top of the page and the text.
+		
+		\large
+		Imperial College London
+		
+		\vspace{0.5cm}
+		\large
+		CMEE Mini Project, February 2016
+		
+		\vspace{1.5cm}
+		\LARGE
+		\textbf{How well does a mechanistic model based upon biochemical principles fit a dataset of thermal responses of individual fitness in plants?}\\ % Bold font
+		
+		\vspace{1.5cm}
+		
+		\LARGE
+		Calum Pennington
+		
+		\vspace{1.5cm}
+		\large
+		Word count: \input{Report_Word_Count.txt}
+		
+		\vfill
+	\end{center}
+	
+\end{titlepage}
+
+\linenumbers
+
+\section*{Introduction}
+%thermal response curves\\
+%phemenological vs mechanistic\\
+
+%**
+%hypotheses/questions\\
+%\cite{Gillooly2001} \cite{Pawar2016} \cite{Knies2010} \cite{Dell2011} \cite{Fe2004} \cite{SchoolfieldSharpe1981}
+
+As temperature affects all biological processes,
+the response of individuals, populations and communities to climate change is likely driven by the temperature sensitivity of traits.
+\cite{Dillon2010, Gilbert2015}
+%Even without climate change, Earth has a complex thermal landscape that fluctuates in space and time, and the thermal sensitivity of organisms likely plays a key role in determining biodiversity dynamics
+%(Allen et al. 2002; Kearney and Porter 2009).
+%Mechanistic models for temperature dependence of traits are required to predict the biological effects of climate change.
+
+Phemenological models simply describe the relationship between data; parameters do not have a mechanistic basis.
+In contrast, mechanistic models give insight into processes behind phenomena.
+They are more useful because they represent a quantitative hypothesis and parameters are estimates of actual system properties. However, choosing the wrong mechanistic model may give misguided conclusions about the mechanisms of interest.
+Probing the mechanisms of trait thermal sensitivity is important, to accurately model effects of climate change. But, it is to understand the effect of variation in temperature dependence of individuals, populations, and communities, where mechanistic models are most key \cite{Pawar2016}.
+
+At the level of organisms, fitness and biological rates have a typical, unimodal, temperature dependence. Performance increases gradually with temperature to an optimum, then declines \cite{Gillooly2001, Knies2010}.
+This has been attributed to Arrhenius kinetics: rates depend on rate-limiting reactions, and reaction rates increase exponentially with temperature \cite{SchoolfieldSharpe1981 cited Arrhenius 1915}.
+The decrease in fitness occurs as high temperatures disrupt the active site of and denature enzymes.
+%(Fields 2001; Hochachka and Somero 2002).
+Mechanistic models underpinned by physiological principles are proposed to improve predictions for temperature dependence and the biological effects of climate change
+\cite{Dell2011, Gilbert2015}.
+%forecasts for how populations and ecological communities will respond to climate change
+%(Deutsch et al. 2008; Angilletta 2009; Dell et al. 2011; Kingsolver et al. 2011; Huey et al. 2012; Pawar et al. 2015).
+
+%Because the biochemistry of metabolism is common to aerobic organisms, we predict that plotting mass-normalized metabolic rates [ln(B0)] as a function of 1/T for different taxonomic or functional groups should yield similar straight lines with slopes
+%eg
+%Mass- and temperature-compensated resting metabolic rates of all organisms are similar: The lowest (for unicellular organisms and plants) is separated from the highest (for endothermic vertebrates) by a factor of about 20. Temperature and body size are primary determinants of biological time and ecological roles
+
+The Boltzmann-Arrhenius model of biochemical kinetics is a mechanistic model for predicting trait thermal response \cite{Knies2010}:
+%(Kooijman 2000; Gillooly et al. 2001; Brown et al. 2004; Savage et al. 2004).
+%The Arrhenius equation has been used in many models for rates of metabolism, growth, development, and fitness.
+%model, based on principles of biochemical kinetics and allometry, that characterizes the effects of temperature and body mass on metabolic rate.
+\begin{itemize}
+	\item[--] \textit{B} - trait at a given temperature, \textit{T} (K)
+	\item[--] $B_{0}$ is temperature-independent and accounts for body size. It controls the curve's vertical offset (due to variation among species) and is the trait value at a reference temperature.
+	\item[--] \textit{E} - activation energy (in eV) of rate-limiting reactions; controls the curve's rise up to the peak (trait's thermal sensitivity).
+	%(Johnson et al. 1974; Gillooly et al. 2001; Brown et al. 2004; Ratkowsky et al. 2005)
+	\item[--] $T_{pk}$ - temperature at which the trait peaks
+	\item[--] \textit{k} - Boltzmann constant (8.617 $\times$ $10^{-5}$ $\cdot$ $K^{-1}$)
+\end{itemize}
+Some models simply use the Arrhenius equation,
+%(Gillooly et al. 2001; Savage et al. 2004)
+however, the Schoolfield allows for thermal denaturation of rate-limiting enzymes \cite{Knies2010, SchoolfieldSharpe1981}.
+%(Schoolfield et al. 1981; Ratkowsky et al. 2005)
+An extra parameter, $E_{d}$ (deactivation energy) controls the curve's fall.
+%The Boltzmann-Arrhenius model is just the numerator of the Schoolfield equation and models only the curve's rise.
+
+\begin{equation}
+B =
+\frac{B_{0}
+	e^{\frac{-E}{k}
+		(\frac{1}{T}-\frac{1}{283.15})}}
+{1 + \frac{E}{E_d - E}
+	e^{\frac{E_d}{k}(\frac{1}{T_pk}-\frac{1}{T})}}
+%e^{\frac{E_l}{k}
+%	(\frac{1}{T_l}-\frac{1}{T})} +
+%e^{\frac{E_h}{k}
+%	(\frac{1}{T_h}-\frac{1}{T})}}
+\end{equation}
+%What do they model?
+%- explain parameters
+%How effective have they been? Why?
+%Issues with them
+%Literature
+%Why these models - and why I'm comparing them
+
+The proposition that thermal sensitivity follows Arrhenius kinetics - that it corresponds to the activation energy of underlying rate-limiting enzymes - has been criticised; these models are contentious.
+A particular issue is whether \textit{E} reflects the activation energy of one or more enzymes, and studies exhibit \textit{E} values that vary from the reported interspecific average, 0.6 eV \cite{Pawar2016, Dell2011}.
+%(Irlich et al. 2009; Knies and Kingsolver 2010; Dell et al. 2011; Englund et al. 2011)
+%(Savage et al. 2004; Vasseur and McCann 2005; Wolfshaar et al. 2008; Petchey et al. 2010; Rall et al. 2010; O’Connor et al. 2011; Stegen et al. 2012)
+%0.6 originally suggested (Gillooly et al. 2001)
+%Understanding the sources of the variation in E within and across species is therefore important, especially because such variation is likely to have nontrivial effects on ecological and evolutionary dynamics (Vasseur and McCann 2005; Dell et al. 2011, 2014)
+The development of mechanistic models of trait temperature dependence %(to predict climate change effects)
+rely on resolving this.
+
+To this end, I aim to evaluate the fit of the Schoolfield and Boltzmann-Arrhenius models to a dataset of thermal performance curves. I contrast a phemenological alternative, a cubic polynomial model, which has the same number of parameters as the Schoolfield.
+%From a scientist's point of view, there is nothing special about the polynomial model. You should pick it when it is the right equation to model your data. However, few biological or chemical models are described by polynomial equations (cite).
+%If you fit a polynomial model to your data, you might get a nice-looking curve, but you will not be able to interpret the best-fit parameter valuees in terms of biology/chemistry.
+
+\subsection*{Questions}
+%Hypotheses and Predictions
+%How well does a mechanistic model based upon biochemical principles fit a dataset of thermal responses of individual fitness in plants?
+
+\begin{enumerate}
+	\item Do the models fit the data well?
+	%criteria
+	%Hyp -
+	%Pred -
+	%- and justify
+	\item Overall, which model best fits the data?
+	\item Does the best model vary across traits and habitats?
+	\item Are the data consistent with the mechanism of Arrhenius kinetics? Does the Schoolfield model generate accurate, realistic best-fit parameter values?
+\end{enumerate}
+
+
+%\begin{equation}
+%%B_{0}e^{\frac{-E}{k}
+%	(\frac{1}{T}-\frac{1}{283.15})}
+%\end{equation}
+%Parameters help define the properties and behavior of the model
+
+%justify choice
+%low temp inactivation - more complex Sch
+
+%\section*{Methods}
+%Nonlinear regression (NLLS)
+%Boltzmann-Arrhenius model
+
+%Dataset
+%editing - justify
+%Models - justify
+%Analysis - see script - justify
+%and evaluate
+
+%justify questions in results
+%**AICc
+
+%Go through scripts
+\section*{Method}
+\subsection*{Dataset}
+The dataset contains (2314) thermal responses of growth, photosynthesis, and respiration rates in 629 species, across 120 orders. (To record a species' thermal response, you measure a certain trait across temperatures within a given range). Nearly all species are algae or plants (Cyanophyta, Chromista, Plantae and Viridiplantae) (aquatic and terrestrial), but there are data on six Euglenophytes, twenty-two fungi, and six Metazoans. These were generated by field and lab experiments across the world, and compiled by various people into the Global Biotraits Database \footnote{published online at biotraits.ucla.edu}. Each row of the dataset contains a trait and temperature value - an x and y point of a thermal response. Points of the same response share a unique ID.
+%%TPC example - discuss why they take this form - Sch biochemical hypothesis
+Temperature is the organism's body temperature, not ambient (which was not recorded for nearly all responses).
+
+\subsubsection*{Data Wrangling}
+I removed (63) rows with missing trait values (none were missing temperature values). The dataset's authors standardised values of the same trait from different sources (converted them to the same SI unit). Except for growth rate, this was either not completed or done wrongly. Often, an original value is missing a standardised one. For many IDs, standardised values are equal when original ones differ. Maybe the first value was standardised and mistakenly copied to subsequent rows. So, for growth rate, I used standardised values. Otherwise, I used original ones. This is preferable to discarding data - if more time was available, I would %correctly 
+standardise these values.
+%justify - evaluate validity - alternative was to remove missing standardised values
+%- all photosynthesis and respiration data (1105 curves)
+%comparing the general fit of models and form of data, and certainty around fits, not actual trait values
+
+I log-transformed trait values, as I used logarithmic versions of the Boltzmann and Schoolfield models.
+Working in linear space is preferable to exponential, as:
+\begin{itemize}
+	\item[--] constant rates of change are more easily interpreted than exponential ones
+	\item[--] it is simpler to interpret model parameters, e.g. in linear space, \textit{E} is the gradient of the rising function
+	\item[--] residuals are more easily calculated in linear space.
+\end{itemize}
+Accordingly, I had to deal with negative and zero trait values (log of a negative is not a number; of 0 is infinite). Instead of discarding these, I transformed all trait values again. To deal with negatives, I subtracted the minimum of all traits. To deal with zeros, I added one (substract the minimum first, as this makes more zeros). Importantly, I transformed original and standardised values separately. The minimum original trait was \url{~-285}; the standardised, \url{~-0.003}. As the maximum standardised value was 6.7, I felt substracting -285 from these was drastic, and maybe invalid. After data wrangling, there were 2308 of the 2314 original curves (21 915 of the original 21 978 data points). %vague
+%justify validity - segments comparison, alternative to remove original values
+%%BOOK
+  %horizonatal transformation ok
+  %log transform helps NLLS (Katie)
+  
+\subsection*{Analysis}
+I performed all analysis in R, version 3.3.2, using the 'minpack.lm' package for nonlinear regression.
+To fit the cubic polynomial model, I used linear regression
+\footnote{while the graph of y vs x is curved, it is a linear equation. This is because a graph of any parameter vs y would be linear (Motulusky \& Christopoulos 2004).}.
+To fit the Schoolfield and Boltzmann, I used nonlinear (least-squares) regression.
+%method - even though the graph of y vs x is curved (assuming no parameter equals zero), the polynomial is a linear equation. This is because a graph of any parameter vs y would be linear (holding X and the other parameters constant).
+
+%**cubic polynomial - linear regression
+%C temp, log trait
+
+%**MUST introduce NLLS and why I use it
+%Why lm for cubic polynomial is ok, but must use NLLS for Sch and Bolt
+\subsubsection*{Nonlinear Regression (NLLS)}
+%what it does
+
+%**writing methods - think about what to say, justify - MAKE NOTES
+%start values - why good/justifiable?
+%- lm
+%- why log space, -1/kT
+%Ed why 0.1
+%what's B0, Tref - why called normalisation, how work, affect curve's shape
+%how justify my Tref (constant)
+%why log
+%why C for cubic
+%convergence
+%why may fail with initial values - why E in particular so sensitive to E (discussion)
+%%SEs
+%%NLLS options, iter etc
+
+Regression finds values of the parameters that are most likely to be correct - those that minimize the sum of the squared vertical distance between data points and the curve (Motulusky \& Christopoulos 2004). It is the sum of squares that is useful for comparing models.
+
+%Nonlinear (least-squares) regression is used to fit data to a model.
+%More precisely, the goal is to find values for the parameters that are most likely to be correct (but I'm doing model selection, prob not interested - esp cubic but that's lm)
+%How does nonlinear regression decide which parameter values are most likely to be correct? Chapter 13
+% the parameters that are most likely to be correct are those that generate a curve that minimizes the sum of the squares of the vertical distance between data points and curve. least-squares regression minimizes
+%link back to task - so NLR fits model to data and provides a platform (generates parameter values and statistics) for evaluating that fit
+%least squares nonlinear regression works by varying the values of the model paramters to minimize SS
+%It is the SS value that is useful for comparing models
+
+%why didn't average replicates - BOOK
+
+%%START VALUES - what did I use, why are these reasonable?
+%explain what they are - BOOK
+%have explained model parameters
+%- diagram
+
+%form of thermal performance curves can vary across species (cite), so, to facilitate fitting, I provided the NLLS function with individually-calculate start values.
+%why calculate individually per curve
+
+Nonlinear regression is an iterative procedure, so you need to define initial values for each parameter.
+%The program must start with estimated initial values for each parameter. It then adjusts these initial values to improve the fit.
+%p27
+%If you are fitting exponential models with multiple phases, you can obtain initial values via curve stripping (cite perhaps book) - google curve stripping
+%however these do not have to be very accurate (why?)
+%poor initial values prevent nonlinear regression from finding best-fit values of the parameters
+I chose 10\degree C as the reference temperature ($T_{ref}$), which is within the range organisms commonly operate \cite{SchoolfieldSharpe1981}.
+%$B_{0}$, E, $E_{d}$, $T_{peak}$
+The start value of $B_{0}$ was the trait value at $T_{ref}$. If there was no recording at $T_{ref}$, I used the temperature closest to it. I chose the trait value at the minimum temperature, if this temperature was bigger than $T_{ref}$. Otherwise, I chose the trait at the maximum temperature, for temperatures below $T_{ref}$.
+I set the start value of $T_{peak}$ to the temperature at which the trait value peaked.
+The maximum trait may occur more than once and at multiple temperatures.
+If so, I set the start value to the maximum temperature at which the trait peaked.
+
+To set the start value of \textit{E} ($E_{st}$), I approximated the curve rise's gradient, taking the rise as data up to and including $T_{peak}$.
+%I set the start value of E to an approximation of the curve rise's gradient.
+In log space, I calculated linear regression of an Arrhenius plot (log trait vs the reciprocal of temperature, $\frac{-1}{kT}$) \cite{Pawar2016, SchoolfieldSharpe1981}.
+%log both sides, then rearrange
+%comes out as y = mx + c
+%E is m
+%trait plotted against -1/kT
+%Samraat's 2016 paper
+As \textit{E} models the curve's rise, it must be positive, so I used the gradient's absolute value (its magnitude without regard to its sign).
+%why did was it ever negative?
+%Regression needs at least two data points
+If the curve rise had one data point or was absent,
+%If the curve rise one/no data points
+regression was not possible, so I set $E_{st}$ to 0.6, a universal average \cite{Dell2011}. %**ASK
+%of activation energies
+As thermal performance curves %%TPCs
+have exponential rises,
+linear regression in log space is an estimate.
+%and set $E_{st}$ to the linear model's gradient (slope's best-fit value)
+To account for error in the initial estimate of $E_{st}$, I generated a hundred random deviants, using $E_{st}$ as the mean of a normal distribution.
+For nonlinear regressions that failed with the original starting estimate, I tried again, up to a hundred times, with a deviant.
+%why start values may be bad, why NLLS so susceptible/sensitive to failing
+%why I only did this for E - enough to make it work for most curves - but why?
+
+%**
+%Decide which model parameters to fit and which to constrain %p16/25 useful
+%which parameters should be fixed to constant values (here none, why?)
+%why constrain
+%If you want to fit a global model, you must specify which parameters are shared among datasets and which are fit individually to each dataset p25 (70)
+%^WHY?
+
+I excluded (361) curves without at least two unique temperature and five trait values.
+%**say why - minimum number of points needed to form typical TPC
+%361 curves did not have at least two unique temperature, and five trait, values.
+%I excluded these because - excluded from analysis
+%**ASK - NONSENSICAL - at least 5 unique temps
+%- accounts for replicates - repeated trait measurements at the same temperature - explain\\
+This was to ensure the data captured at least part of a thermal response, and also to avoid good fits due to overfitting (the Schoolfield and cubic have four parameters).
+Similarly, to fit the Boltzmann, I did not run NLLS for (117) curves whose rise did not have at least three unique temperatures.
+%I fit the Boltzmann to the curve's rise, as it models only this - explain
+%weigh up two approaches, justify mine
+%Easier to say, Boltzmann not good model - not designed to fit whole response
+%and say could've fit to just the rise, but we're asking 'what's the best model for all responses - big dataset?'
+%No, keep the same (justify - nonsensical, obvious result) - say in discussion what would've been more useful comparison - suggest future work
+After filtering, 1947 of the original 2314 curves were analysed.
+
+%%NLLS options, iter etc
+%How plotted model curves - predictions, artificial data
+
+%Per curve (ID),
+%what info/stats saved and why (to see if...)eg SE,
+ %checked for convergence - why may not converge
+ %error handling
+
+%cubic polynomial parameters nonsensical, whereas those of a mechanistic model have biological meaning...to evaluate whether the added complexity(not necessarily) of a mechanistic model is useful
+%When evaluating results - to evaluate the fits
+%are the best-fit values scientifically plausible?
+%How precise are the best-fit parameter values
+%phrasing - you X
+It is important not just to know the best-fit value of each parameter, but how certain that value is. How well did the Schoolfield and Boltzmann determine the best-fit values? Accordingly, I looked at the standard error of the best-fit values.
+%You should also look at the SE values to see how well you have determined the best-fit values.
+%It is not enough to look at the best-fit value
+Nonlinear regression finds parameters that make a model fit the data as closely as possible, but does not ask if another model might work better.
+Moreover, the model with the smallest sum-of-squares is not necessarily the best. A more complicated model (more parameters) has more flexibility to fit the data.
+For model comparison, I used Akaike's Information Criteria, which balances goodness-of-fit with the number of parameters. %You can compare the fit of models...Chp21
+%**Looking at the tradeoff between lower sum-of-squares and more parameters\\
+
+%Nonlinear regression fits a model to data
+%(In most cases, your goal is to get back the best-fit values of the parameters in that model.)
+%If the model makes no sense, even if it fits the data well, you will not be able to interpret best-fit values %Make this point in the intro /models
+%In other situations, your goal is just to get a smooth curve to use for graphing or for interpolating unknown values. In these cases, you need a model that generates a curve that goes near your points, and you will not care whether the model makes scientific sense.
+
+%R2 quantifies goodness of fit. Higher values indicate that the curve comes closer to the data.
+%Do not use R2 as your main criterion for whether a fit is reasonable. A high R2 tells you that the curve came very close to the points, but does not tell you that the fit is sensible in other ays. The best-fit values of the parameters may have values that make no sense (e.g. negative rate constants) or the SE may be big.
+
+\subsubsection*{Assumptions of Linear and Nonlinear Regression}
+%\subsection*{Comparing Models using Akaike's Information Criteria (AIC)}
+%justify choice
+%introduce what it does
+%question I'm answering
+
+\section*{Results}
+%**Are the data consistent with ... mechanism?\\
+
+%**ASK/BOOK - SAM
+%Example good/bad fits - say why they are\\
+
+\subsection*{NLLS}
+%Boltzmann-Arrhenius model
+
+%explain convergence
+ %why it may not happen
+ %how R works
+ %justify options
+
+In most (1288) cases, NLLS to fit the Schoolfield converged in fewer than 100 iterations. For 646 curves, NLLS succeeded but did not converge. %meaning?
+%gave results - found best-fit values of the model's parameters\\
+For 13, NLLS gave an error. %what - initial values?\\
+For 1691 curves, NLLS succeeded with the start value of E originally calculated; 239 needed a different value. %(a random deviant) (2-100 tries)
+NLLS to fit the Boltzmann succeeded for all but one curve.
+%%MUST look at form of all these curves - why get these results
+%As these results are not pertinent to the question, perhaps explain them here
+
+\subsection*{$R^{2}$: do the best-fit curves come close to the data?}
+The cubic polynomial had an $R^{2}$\textgreater 0.6 for 95.3\% of curves (n=1947); Schoolfield, 93.5\% (n=1927\footnote{NLLS succeeded for 1938 curves, 11 of which I excluded for having an anomalous $R^{2}$ (see \textit{Anomalies}).}); and Boltzmann, 93.7\% (n=1819\footnote{I did not run NLLS for 117 curves, and excluded 10 more for having an $R^{2}$\textless 0 (see \textit{Anomalies}).}) (Figure \ref{R2_density}).
+%\ref{Anomalies}
+%when is it less - categories
+%**VIEW CURVES, inc those less than 0.6
+
+%**CAPTION
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{../Results/R_Squared_Density.pdf}
+	\caption{\textit{Density %?
+		of $R^{2}$ goodness-of-fit values}\\
+	I fit models to the thermal responses of growth, photosynthesis, and respiration rates in algae and plants. Using linear regression, I fit the cubic polynomial to 1947 curves. Using nonlinear regression, I fit the Schoolfield to 1938 curves, and Boltzmann to 390.}
+	\label{R2_density}
+\end{figure}
+
+\subsection*{Comparing Models using Akaike's Information Criteria (AIC)}
+%%AICc\\
+%Looking at the tradeoff between lower sum-of-squares and more parameters\\
+
+Overall, for most (63.2\% of) curves, the cubic polynomial model had the lowest AIC. The Schoolfield had the lowest for a notable proportion (31.0\%). The Boltzmann had the lowest in only 5.8\% of cases. This pattern is consistent across data subsets, but the cubic was particularly dominant for respiration rates (81.5\%) and terrestrial habitats (73.6\%) (Figure \ref{Proportion_best_model}).
+Growth rate was another notable deviation: for a higher proportion (39.1\%), the Schoolfield had the lowest AIC.
+%**form of curves
+%**AICc
+%\subsubsection*{Does the best model vary across data subsets?}
+
+If the Boltzmann AIC was lowest (110 curves), I compared the cubic and Schoolfield.
+%**method - say why
+The cubic AIC was lower for nearly all (95.5\%) of these.
+Curves where the Schoolfield AIC was lower, were mainly data on photosynthesis rate or freshwater species (lower Schoolfield for 14.8 and 13.8\% of these subsets respectively).
+%of curves in these subsets
+%but this proportion was lower for photosynthesis rates (85.2\%) and freshwater species (86.2\%)
+For respiration rates and terrestrial habitats, the cubic had the lowest AIC in all cases.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{../Results/Proportion_Best_Model.pdf}
+	\caption{\textit{Per model, the proportion of curves for which it had the the lowest AIC. Differences across habitat and trait categories are shown.}\\
+			I fit models to the thermal responses of growth, photosynthesis, and respiration rates in algae and plants. Using linear regression, I fit the cubic polynomial to 1947 curves. Using nonlinear regression, I fit the Schoolfield to 1938 curves, and Boltzmann to 390. I compared the models using Akaike's Information Criteria.
+	}
+	\label{Proportion_best_model}
+	% narrower bar/panels, don't wrap
+	% bigger text - axis labels/titles, panels, legend
+\end{figure}
+
+\subsubsection*{What was the cubic's goodness-of-fit, when the Schoolfield had a lower AIC, and vice versa?}
+Where the Schoolfield's AIC was lower (n = 607), the cubic had an $R^{2}$\textgreater 0.9 for 69.2\% of curves. For 3.1\% (19) of curves, it had an $R^{2}$\textless 0.6. The Schoolfield also had an $R^{2}$\textless 0.6 for 2.6\%.
+Where the cubic's AIC was lower (n = 1329), the Schoolfield had an $R^{2}$\textgreater 0.9 for 61.7\% of curves. For 8.9\% of curves, it had an $R^{2}$\textless 0.6.
+
+%\footnote{Curve IDs: MTD2464,, MTD2557,, MTD2645, MTD2756, MTD2926, MTD3217, MTD3227, MTD3867, MTD3892, MTD3894, MTD3947, MTD3948, MTD3958, MTD4179, MTD4282, MTD4382, MTD4430, MTD4771, MTD4773}
+
+\subsubsection*{Are curves that only represent the rise of a thermal response best fit by the Boltzmann?}
+390 curves only represent the rise of a thermal response (e.g. Figure \ref{Curve_rise_only}). For most of these, the cubic had the lowest AIC (74.6\%), similarly to the overall results. However, in contrast, a much higher proportion were best fit by the Boltzmann (24.1\%). What was the cubic's goodness-of-fit, where the Boltzmann's AIC was lower? 86.2\% of curves had an $R_{2}$ \textgreater 0.6; 61.7\% had an $R_{2}$ \textgreater 0.9.
+Where the Boltzmann had the overall lowest AIC, 80.3\% of curves only represent the rise.
+%is the distinction clear? METHODS
+%Additionally, where the Boltzmann had the overall lowest AIC, 80.3\% of curves only represent the rise.
+%so nearly none were best fit by the Schoolfield
+%- which few were and why?
+%discussion - unsurprising, as Schoolfield penalised for more complexity, Boltzmann simpler
+%**- then link back to hypotheses, lit
+
+%do sub figure with initial decrease curves
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[page=1, scale=0.5]{../Results/Thermal_Response_Plots_gg.pdf}
+		\caption{Data only representing the rise of a thermal response}
+		\label{Curve_rise_only}
+	\end{subfigure}%
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[page=8, scale=0.5]{../Results/Thermal_Response_Plots_gg.pdf}
+		\caption{Data with an initial decrease in the trait value}
+		\label{Curve_initial_decrease}
+	\end{subfigure}
+	\caption{Models: cubic polynomial (blue), Boltzmann-Arrhenius (green), Schoolfield (red)} %where did the legend go and proper axis title go???
+\end{figure}
+
+\subsubsection*{Are curves with an initial decrease in the trait value best fit by the cubic polynomial?}
+%curves where the trait value decreases at the curve's lower temperatures
+180 curves had an initial decrease (e.g. Figure \ref{Curve_initial_decrease}). The cubic had the lowest AIC for 82.8\% of these: a higher proportion than that for all curves. For 25.4\%, the Schoolfield had an $R^{2}$ \textless 0.6.
+%method/discussion
+	%Sch/Bolt not designed to model initial decrease, but cubic can model this
+	%how I defined initial decrease - issues with this
+	%of course I don't think these are a true decrease - putting this forward as a possible explanation
+	% - result of having few replicates
+	%better to get a new overall proportion, excluding these curves
+	%low temp inactivation - more complex Sch - judegement as to whether this is really needed
+%final increase
+
+\subsection*{Do the best-fit parameter values of the Schoolfield make sense?}
+%Boltzmann
+%B0 - unit depends on trait (only growth rate standardised)
+For 93.0\% of curves, the best-fit value of \textit{E} was \textless 0.1 eV %check units
+. The minimum value was 2.3 x $10^{-13}$ eV; the maximum, 2.7 eV. \textit{E} was \textgreater 0.6 for 1.4\% of curves.
+%split into trait/habitat categories?
+For 99.6\% of curves, the best-fit $E_{d}$ value was \textless 1 eV. The minimum was 0.002 eV; the maximum, 144.9 eV.
+For 63.3\% of curves, the best-fit $T_{pk}$ value was between 20 and 60\degree C. For 17.1\%, it was \textgreater 100\degree C; for 4.2\%, \textless 10\degree C.
+
+%standardisation reduced value of E?
+
+\subsubsection*{Are plausible best-fit $T_{pk}$ values generated for curves that only represent the rise of a thermal response?}
+For IDs with a best-fit $T_{pk}$ \textgreater 400 K, 81.7\% only represented the rise of a thermal response (n = 317).
+
+%**CAPTION
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{../Results/Sch_Best_Fit_Values_Density.pdf}
+	\caption{\textit{Density of the Schoolfield model's best-fit parameter values}\\
+		Using nonlinear regression, I fit the model to 1938 thermal-response curves of growth, photosynthesis, and respiration rates in algae and plants. %%PARAMETERS
+	}
+	\label{Sch_best_fit_density}
+\end{figure}
+
+\subsection*{How precise are the Schoolfield's best-fit parameter values?}
+%of the Schoolfield
+%Don't just want to know the best-fit value for each parameter. Also want to know how certain that value is. How well have you determined the best-fit values.
+%consider the number and scatter of the data points - p18
+%**HELP
+%units?
+%why get these SEs?
+%what's a reasonable SE per param, why?
+
+%say this is for Schoolfield, why
+The highest standard error (SE) of a best-fit value for $B_{0}$ was 11.0 (Figure \ref{Sch_SE_density}).
+%returned by NLLS
+%units?
+For all 1938 fits, the SE of $T_{peak}$ was between 0 and 1.
+%the best-fit
+%even where Tpk was ridiculous?
+For E, 92.3\% of fits gave a SE\ \textless 2. However, twelve fits gave a SE\ \textgreater 100. Seven of these curves lacked a well-defined rise, having two or fewer points before $T_{peak}$ (e.g. Supplementary Figure ). Three lacked any form (e.g. Supplementary Figure ), and two seemed to show much variation among replicates (e.g. Supplementary Figure ) (judged by manually inspecting plotted data \footnote{Curve IDs: MTD3954, MTD4304, MTD4312, MTD4342, MTD4375}; I cannot give quantitative measures).
+%repre
+%represent either an atypical thermal response, for which biokinetic models are inappropriate, or, more probably, a lack of data.
+%However, a fraction of the dataset (overall how well does a mechanistic model fit?)
+% - but data just plants - how many genuses?
+
+For $E_{d}$, 97.0\% of fits had a SE\ \textless 10. However, fifty-nine fits had a SE\ \textgreater 10. Thirty-six of these curves lacked a well-defined fall (e.g. Supplementary Figure ), having two or fewer points after $T_{peak}$. The other twenty-three, though, seemed to be well-defined (judged by manually inspecting plotted data).
+
+%Do curves without a well-defined rise have a high SE for E?
+%Do curves without a well-defined fall have a high SE for $E_{d}$?
+%flat responses
+
+%^then anomalies, then check what else, then methods, captions
+
+%**CAPTION
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{../Results/Sch_Params_SE_Density.pdf}
+	\caption{\textit{Density of the standard error of the Schoolfield model's best-fit parameter values}\\
+		Using nonlinear regression, I fit the model to 1938 thermal-response curves of growth, photosynthesis, and respiration rates in algae and plants. %%PARAMETERS
+	}
+	\label{Sch_SE_density}
+\end{figure}
+
+%\subsection*{Anomalies} %\label{Anomalies}
+%18 curves - Sch R2 < 0 (12 < -1)
+%Big SEs**
+%look at analysis script
+
+%Remember, don't interpret results - do this in discussion
+%and then PEE - link it all back to the questions
+
+%problem with comparing to Boltzmann
+
+\section*{Discussion}
+%relate explicitly to hypotheses/questions
+%and literature
+%Limitations/evaluation
+%Suggestions for Future Work
+
+%why NLLS did not converge sometimes
+%that it did converge most times, what it means
+%why 13 failed - out of 1947, is this permissible?
+%what it means that Boltzmann fit all curve rises
+%but a caveat that many (317) didn't have rises
+%and that it doesn't capture the fall (of which...curves have this)
+%Bolt maybe could answer some questions but
+%and whether or not the rise and fall are in the data - if we want to answer these questions, surely must try to capture this data, not draw conclusions based on/model incomplete datasets
+
+%what it means that most fits were good across the models
+%why certain ones were bad - is this permissible?
+%relate back to question eg so all models were good, but R2...and begs the question...
+
+
+%The parameters of the cubic polynomial model do not correspond to biological processes.
+%These were never part of the question.
+%The model is not enough, if you are fitting curves to your data to understand your system.
+%specific - your system > thermal performance
+
+%simply describe the general shape of the dataset
+%If your goal is simply to create a standard curve from which to interpolate unknown values, it may be enough to look at the curve.
+
+%in these cases, all models are fit to the same data, and it is wholly valid to compare AICs
+%as I fit the Boltzmann to only part of each data, this is not necessarily a valid comparision
+
+\subsection*{Does the cubic polynomial describe the general shape of the dataset?}
+%**Where the Schoolfield's AIC was lower (n = 607), the cubic had an R2 > 0.9 for 69.2\% of curves. For 3.1\% (19) of curves, it had an R2 < 0.6. The Schoolfield also had an R2 < 0.6 for 2.6\%.
+%where it was not a good fit...
+The cubic polynomial model best fit most curves. %It describes the general shape of the dataset's TPCs and could be used to interpolate unknown values. %elaborate
+This was most striking for respiration rates.
+However, a notable proportion were not best fit by the cubic. So, a key question is, where did these exceptions occur?
+%Is the cubic still a good fit to the data?
+While many occurred when the data only represent the rise of a thermal response, in most of these cases, the cubic was still the best fit.
+Moreover, where it was not, it had sufficient goodness-of-fit.
+The split between curves best fit by the cubic, and those by the Schoolfield, was generally consistent across studied habitats and traits. For growth rate, there was an increased proportion of Schoolfield best fits, although most were still best fit by the cubic.
+%do these curves feature less low/high inactivation? If so, worth seeing if more complex Sch is better
+%%LITERATURE - WHY might resp, terrestrial / growth rate be
+%in line with other findings? surprising, why?
+So, the cubic describes the general shape of the dataset's TPCs and could be used to interpolate unknown values. %elaborate - specific 'values'
+%%ASK why - LITERATURE?
+%discuss practicality, requirements for accuracy
+Yet, crucial exceptions do exist: attention must be paid to the trait and habitat of interest.
+Exactly if, how and why the cubic is an unreliable fit of certain data, must be further probed, especially for a wider range of traits/habitats. Conclusions using the cubic should be drawn cautiously and, where precision is key, it is worth considering other models.
+
+%**BOLTZMANN
+
+%cubic - cannot interpret parameters
+%Boltzmann - only fit to rise - comparison not valid
+
+
+\subsection*{Does the Schoolfield fit the dataset, and are its best-fit parameter values accurate and realistic?}
+%**Curves where the Schoolfield AIC was lower, were mainly data on photosynthesis rate or freshwater species
+While the Schoolfield model was not the best fit of most curves, it was for a notable fraction. Furthermore, similarly to the cubic, where it was not the best, it had sufficient goodness-of-fit. (As previously discussed, this was especially stark for respiration, but less so for growth rate). A marked departure were curves that had an initial decrease in trait value. Not only were more best fit by the cubic, but the Schoolfield was a bad fit to many.
+Yet, this does not invalidate the Schoolfield for these data.
+The decrease is likely due to error amongst replicate measurements, or a lack of replicates. It is presumably not a true decrease, but low-temperature deactivation.
+At very low temperature, enzymes work slowly (substrate molecules have less energy and move into the active site more slowly) %this explains the rise, but explicitly say why the rise is less steep
+- the gradient of the curve's rise is less steep.
+An extended Schoolfield models this with an extra parameter, $E_{l}$ \cite{SchoolfieldSharpe1981}.
+With another parameter, $E_{h}$, it can model high-temperature deactivation, a similar effect.
+%%LITERATURE - how effective is the extended Schoolfield
+This study demonstrates that in most cases, a simplified Schoolfield is appropriate - measurements were not made at sufficiently low temperatures to detect deactivation.
+
+%%PEE
+
+%We cannot interpret the cubic's best-fit values - are the Schoolfield's reasonable?
+%Boltzmann?
+%make and justify (with results) a judgement as to which the best model is and why
+
+%The take home message is that, while it is important to try to capture the entire response.
+%Otherwise, must reign in conclusions can make about the responses.
+
+Most best-fit \textit{E} values were much lower than 0.65 eV, the reported average \cite{Dell2011}. Given there are so many curves, this is notable.
+It may be due to differences in the studied datasets \cite{Pawar2016}, %be specific
+or the units presented.
+Here, growth rate (43\% of responses) was standardised to 'per second' units, which is small, lowering the trait values and thus slope. On the other hand, \textit{E} is the slope of the response's rise (when plotted on ln scale), so should be independent of the rate's units. Further clarification is needed. Nevertheless, upon viewing curves plotted with best-fit parameters, all go through the raw points (see \textit{Supplementary Information}).
+The best-fit values of $T_{pk}$ were biologically realistic (most were around 27\degree C). While a big proportion were implausibly high, most of these occurred when only the response's rise was represented. $T_{pk}$ occurs at the inflection between the response's rise and fall; its estimation requires both aspects. Moreover, these data may not capture the response's true peak. Thus, in these cases, it is unreasonable to estimate $T_{pk}$ reliably.
+%B0, Ed
+%%PEE
+
+%How precise are they? Are the big errors permissible?
+%cubic nonsensical parameters
+%Is the Sch a good model, is it best, is cubic bad, despite it fitting well?
+
+A severe limitation of the analysis is that I did not calculate confidence intervals of the best-fit parameter values. While confidence intervals are based on SE, you must consider the value's magnitude to interpret its SE (e.g. a SE of 1 for a value of 10 is permissible, but for a value of 0.5, it is a lot of uncertainty). That is hard in a big dataset. So, I cannot conclude this key question, but only allude to general trends.
+Given the small best-fit values of \textit{E}, it is especially hard to evaluate SE, but the uncertainty is not excessive. Exceptions are explained by a lack of a curve rise. Most best-fit $T_{pk}$ values were between 290 and 330 K; all had a SE 0-1 K. $T_{pk}$ values were not only plausible, but had high certainty.
+
+Generally, the Schoolfield is a reliable model. However, the study emphasises the contention of whether thermal sensitivity can be expressed as one activation energy.
+Variation among traits and habitats is critical for modelling climate change effects, and a challenge to the Schoolfield's efficacy. However, as thermal responses seem to have a marked basis in Arrhenius kinetics, the Schoolfield is a good platform upon which to explore more complicated models.
+
+To improve the analysis, I should have used the corrected AIC (AICc), as each thermal response had a small value of N. For small sample sizes, the calculated AIC is too small and AICc, more accurate. Moreover, it would be worthwhile considering the magnitude of difference among AICs, for a response.
+Also, plotting the residuals of fits would have enabled me to assess if curves deviated systematically from data. In line with nonlinear regression's assumptions, if a model is appropriate, data are randomly scattered around the best-fit curve. Clusters of points would indicate data are not randomly distributed, and the fit is inappropriate (Motulsky \& Christopoulos 2004).
+
+%However, for B0, there seem to be instances both where the estimate is fairly certain and uncertain. why
+%Similarly, for Ed, however more fits generated uncertain values. why
+
+
+\bibliographystyle{apalike}
+\bibliography{Mini_Project.bib}
+% copy bib to repository
+
+\end{document}
